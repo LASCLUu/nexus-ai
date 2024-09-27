@@ -1,7 +1,0 @@
-estilo tabela:
-
-cod_log, data/hora, operacao, prompt, resposta
-
-exemplo:
-1, hoje, consultar, pq o ceu é azul?, pq os gazes quiseram
-
