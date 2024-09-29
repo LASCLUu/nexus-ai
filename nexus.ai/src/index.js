@@ -2,12 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import logo from './logo-nexus.png';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <header id='header'>
+      <img src={logo} alt="Logo" id='logo'/>
+      <h1 id='titulo'>Seu assistente acadêmico inteligente</h1>
+    </header>
+      <App />
+    <footer id='footer'></footer>
   </React.StrictMode>
 );
 
