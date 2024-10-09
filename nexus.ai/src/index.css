@@ -35,14 +35,59 @@ footer{
   background-color: #336F51;
   position: fixed;
   bottom: 0;
+  text-align: auto;
 }
 
 img#logo{
-  height: 7rem;
+  height: 6rem;
   margin: 1% 0 1% 1%;
+}
+
+*{
+  color: white;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
 }
 
 h1#titulo{
   color: white;
   margin: auto;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 55px;
 }
+
+h1#historico-h1{
+  color: #273D3B;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-style: normal;
+}
+
+h1#nova-con-h1{
+  color: #273D3B;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-style: normal;
+}
+
+button#botao-pesquisa{
+  color: #273D3B;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-style: normal;
+}
+
+select#inputMateriaNova{
+  color: #273D3B;
+}
+
+sugestao{
+  background-color: #273D3B;
+}
+
+/* select{
+  color: #659F82;
+} */
