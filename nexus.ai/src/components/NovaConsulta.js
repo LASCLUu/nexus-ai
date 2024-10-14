@@ -14,7 +14,7 @@ const NovaConsulta = () => {
                     <option value="Química">Química</option>
                     <option value="Outro">Outro</option>
                 </select>
-                <textarea name="novaConsultaText" id="novaConsultaText"></textarea>
+                <textarea name="novaConsultaText" placeholder="Digite sua dúvida aqui!" id="novaConsultaText"></textarea>
             </div>
             <div className="botaoEnviarNovaConsulta" id="btn-div">
                 <button id="botao-consultar">
