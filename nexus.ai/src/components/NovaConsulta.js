@@ -5,17 +5,19 @@ const NovaConsulta = () => {
         <div className="novaConsulta">
             <div className="interfaceNovaConsulta">
                 <h1 id="nova-con-h1">Fazer nova consulta:</h1>
-                <label for="materiaNova">Matéria:</label>
+                <label for="materiaNova" id="label-materia-nova">Matéria:</label>
                 <select name="materiaNova" id="inputMateriaNova">
+                    <option value="Selecione">-- Selecione --</option>
                     <option value="Matemática">Matemática</option>
                     <option value="Física">Física</option>
                     <option value="Português">Português</option>
                     <option value="Química">Química</option>
+                    <option value="Outro">Outro</option>
                 </select>
                 <textarea name="novaConsultaText" id="novaConsultaText"></textarea>
             </div>
             <div className="botaoEnviarNovaConsulta" id="btn-div">
-                <button id="botao-pesquisa">
+                <button id="botao-consultar">
                     Consultar
                 </button>
             </div>
