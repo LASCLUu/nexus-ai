@@ -4,14 +4,14 @@ import Materia from "./Materia";
 const Historico = () => {
     return(
         <div className="historico">
-            <div>
-                <h1 id="historico-h1">Histórico:</h1>
+            <div className="materias"> 
+                    <h1 id="historico-h1">Histórico:</h1>
+                    <Materia />
+                    <Materia />
+                    <Materia />
+                    <Materia />
+                    <Materia />
             </div>
-            <Materia />
-            <Materia />
-            <Materia />
-            <Materia />
-            <Materia />
         </div>
     )
 }

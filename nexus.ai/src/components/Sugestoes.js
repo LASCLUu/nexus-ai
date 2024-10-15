@@ -1,12 +1,13 @@
 import React from "react";
+import Sugestao from "./Sugestao";
 
 const Sugestoes = () => {
     return(
-        <div className="sugestao">
-            <div id="sugest-1"> 
-                <img src="" alt="" />
-                <p>Nome Sugestão</p>
-            </div>
+        <div className="sugestoes">
+            <Sugestao/>
+            <Sugestao/>
+            <Sugestao/>
+            <Sugestao/>
         </div>
     )
 }
