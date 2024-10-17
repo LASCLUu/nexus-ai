@@ -224,5 +224,22 @@ textarea.conversa-txt{
 
 a#open-ai-link{
   text-decoration: none;
-  font-weight: 900;
+  font-weight: 1000;
+}
+
+::-webkit-scrollbar{
+  width: 8.5px;
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: #3e8a5b;
+  border-radius: 500px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background: #3a5842;
+}
+
+::-webkit-scrollbar-track{
+  background: transparent;
 }
