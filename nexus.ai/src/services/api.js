@@ -1,12 +1,31 @@
-// import axios from "axios";
+require('dotenv').config()
+import axios from "axios";
 
-// const ENDPOINTS = {};
 
-// export const sendMessage = async () ={
-//     try{
-//         const teste = teste;
-//         return teste;
-//     }catch(error){
-//         console.log(error)
-//     }
-// }
+const url = "http://localhost:3000"
+
+const ENDPOINTS = {
+    gemini: 'api/pergunte-ao-gemini'
+};
+
+export const api = axios.create({
+    baseURL: url,
+})
+
+export const messageGemini = async (message) => {
+    try {
+      const response = await api.post(
+        ENDPOINTS.gemini,
+        { message },
+        {
+          // Enviando como objeto
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response;
+    } catch (err) {
+      console.log("Erro ao enviar mensagem para Gemini: ", err);
+    }
+  };
