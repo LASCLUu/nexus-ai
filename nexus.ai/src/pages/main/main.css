@@ -282,16 +282,13 @@ header{
 footer{
   background-color: #336F51;
   position: auto;
-  left: 0;
-  right: 0;
-  bottom: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: white;
-  height: 45px;
+  height: 55px;
   font-size: 13px;
-  padding: 10px;
+  padding: 15px;
 }
 
 img#logo{
@@ -306,6 +303,23 @@ img#logo{
   font-style: normal;
 }
 
-.chat{
-  margin: auto;
+textarea#chatTextArea{
+  height: 95%;
+  width: 100%;
+  align-items: top;
+  border-radius: 0;
+  background-color: #6A9F9D;
+}
+
+button#chatEnviarButton{
+  border-radius: 20%;
+  background-color: #3e8a5b;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+div#divChat{
+  align-items: center;
+  width: 100%;
 }
