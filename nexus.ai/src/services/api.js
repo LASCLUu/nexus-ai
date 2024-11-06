@@ -1,5 +1,5 @@
-require('dotenv').config()
 import axios from "axios";
+require('dotenv').config()
 
 
 const url = "http://localhost:3000"
