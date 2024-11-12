@@ -1,13 +1,37 @@
-require('dotenv').config()
 const express = require("express");
-// const cors = require("cors");
-const {GoogleGenerativeAI} = require('@google/generative-ai')
+const cors = require("cors");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const dotenv = require("dotenv");
+const { Pool } = require("pg");
+const fs = require("fs");
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
-const GEMINI_API_KEY= process.env.GEMINI_API_KEY
 
+const dbConfig = {
+  user: process.env.REACT_APP_POSTGRESQL_USER,
+  password: process.env.REACT_APP_POSTGRESQL_PASSWORD,
+  host: process.env.REACT_APP_POSTGRESQL_HOST,
+  port: process.env.REACT_APP_POSTGRESQL_PORT,
+  database: process.env.REACT_APP_POSTGRESQL_DATABASE,
+  ssl: {
+    rejectUnauthorized: true,
+    ca: fs.readFileSync(process.env.REACT_APP_POSTGRESQL_CA, "utf8"),
+  },
+};
 
+// Usando Pool de Conexões para gerenciar as conexões com o banco de dados
+const pool = new Pool(dbConfig);
+
+app.use(
+  cors({
+    origin: "*",
+    methods: "*",
+    allowedHeaders: "*",
+  })
+);
 
 app.get("/hello-world", (req, res) => {
   try {
@@ -17,15 +41,305 @@ app.get("/hello-world", (req, res) => {
   }
 });
 
-app.post('api/pergunte-ao-gemini', async(req, res) => {
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash'
-  })
-const {prompt} = req.body
-const result = await model.generateContent(prompt)
-res.json({completion: result.response.text()})
-})
+app.post("/api/pergunte-ao-gemini", async (req, res) => {
+  try {
+    const { prompt } = req.body;
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt é necessário!" });
+    }
+
+    const genAI = new GoogleGenerativeAI({
+      apiKey: process.env.REACT_APP_GEMINI_API_KEY,
+    });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+    });
+
+    console.log("Prompt recebido:", prompt);
+
+    const result = await model.generateContent(prompt);
+    res.json({ completion: result.response.text });
+  } catch (error) {
+    console.error("Erro ao interagir com o modelo:", error);
+    res.status(500).send({ error: "Erro ao gerar conteúdo." });
+  }
+});
+
+// CRUD LOGS
+
+// Criar log
+app.post("/log", async (req, res) => {
+  const { usuario_id, tipo_log, descricao } = req.body;
+
+  if (!usuario_id || !tipo_log || !descricao) {
+    return res.status(400).json({
+      error:
+        "Parâmetros 'usuario_id', 'tipo_log' e 'descricao' são obrigatórios.",
+    });
+  }
+
+  try {
+    const createQuery = `
+      INSERT INTO "log_sistema" ("usuario_id", "tipo_log", "descricao")
+      VALUES ($1, $2, $3)
+      RETURNING *`;
+
+    const createValues = [usuario_id, tipo_log, descricao];
+    const createResult = await pool.query(createQuery, createValues);
+
+    res.status(201).json({
+      message: "Log criado com sucesso!",
+      log: createResult.rows[0], // Retorna o log criado
+    });
+  } catch (error) {
+    console.error("Erro ao criar log:", error);
+    res.status(500).json({ error: "Erro ao criar log" });
+  }
+});
+
+// Listar todos os logs
+app.get("/logs", async (req, res) => {
+  const { usuario_id } = req.query;
+
+  try {
+    let query = 'SELECT * FROM "log_sistema"';
+    let values = [];
+
+    if (usuario_id) {
+      query += ' WHERE "usuario_id" = $1';
+      values = [usuario_id];
+    }
+
+    const result = await pool.query(query, values);
+
+    res.status(200).json({
+      logs: result.rows, // Retorna os logs encontrados
+    });
+  } catch (error) {
+    console.error("Erro ao consultar logs:", error);
+    res.status(500).json({ error: "Erro ao consultar logs" });
+  }
+});
+
+// Consultar log específico pelo ID
+app.get("/log/:id", async (req, res) => {
+  const logId = req.params.id;
+
+  try {
+    const query = `SELECT * FROM "log_sistema" WHERE "id" = $1`;
+    const result = await pool.query(query, [logId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Log não encontrado." });
+    }
+
+    res.status(200).json({
+      log: result.rows[0], // Retorna o log encontrado
+    });
+  } catch (error) {
+    console.error("Erro ao consultar log:", error);
+    res.status(500).json({ error: "Erro ao consultar log" });
+  }
+});
+
+// Atualizar log específico
+app.put("/log/:id", async (req, res) => {
+  const logId = req.params.id;
+  const { tipo_log, descricao } = req.body;
+
+  if (!tipo_log || !descricao) {
+    return res.status(400).json({
+      error: "Parâmetros 'tipo_log' e 'descricao' são obrigatórios.",
+    });
+  }
+
+  try {
+    const query = `
+      UPDATE "log_sistema"
+      SET "tipo_log" = $1, "descricao" = $2
+      WHERE "id" = $3
+      RETURNING *`;
+
+    const result = await pool.query(query, [tipo_log, descricao, logId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Log não encontrado." });
+    }
+
+    res.status(200).json({
+      message: `Log com id ${logId} atualizado com sucesso!`,
+      log: result.rows[0], // Retorna o log atualizado
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar log:", error);
+    res.status(500).json({ error: "Erro ao atualizar log" });
+  }
+});
+
+// Deletar log específico
+app.delete("/log/:id", async (req, res) => {
+  const logId = req.params.id;
+
+  try {
+    const deleteQuery = `
+      DELETE FROM "log_sistema"
+      WHERE "id" = $1
+      RETURNING *`;
+
+    const deleteResult = await pool.query(deleteQuery, [logId]);
+
+    if (deleteResult.rowCount === 0) {
+      return res.status(404).json({ error: "Log não encontrado." });
+    }
+
+    res.status(200).json({
+      message: `Log com id ${logId} deletado com sucesso!`,
+      log: deleteResult.rows[0], // Retorna o log deletado
+    });
+  } catch (error) {
+    console.error("Erro ao deletar log:", error);
+    res.status(500).json({ error: "Erro ao deletar log" });
+  }
+});
+
+app.get("/consultar", async (req, res) => {
+  const { usuario_id, acao } = req.query; // Captura os parâmetros da URL
+  console.log("Parâmetros recebidos:", req.query); // Verifique se os parâmetros estão sendo passados corretamente
+
+  if (!usuario_id || !acao) {
+    return res.status(400).json({
+      error: "Parâmetros 'usuario_id' e 'acao' são obrigatórios.",
+    });
+  }
+
+  try {
+    const logQuery = `
+    INSERT INTO "log_sistema" ("usuario_id", "tipo_log", "descricao")
+    VALUES ($1, $2, $3)
+    RETURNING * `;
+
+    const logValues = [usuario_id, "consulta", `Consulta realizada: ${acao}`];
+    const logResult = await pool.query(logQuery, logValues);
+
+    // Retorna o log registrado
+    console.log("Log registrado:", logResult.rows[0]);
+
+    res.status(200).json({
+      message: `Consulta realizada com sucesso para o usuário ${usuario_id}`,
+      log: logResult.rows[0], // Retorna o log criado
+    });
+  } catch (error) {
+    console.error("Erro ao registrar log:", error);
+    res.status(500).json({ error: "Erro ao registrar log" });
+  } finally {
+    await client.end(); // Fecha a conexão com o banco de dados
+  }
+});
+
+// CRUD USUÁRIO
+
+// Criar um novo usuário
+app.post("/usuario", async (req, res) => {
+  const { nome, email } = req.body;
+
+  if (!nome || !email) {
+    return res.status(400).json({ error: "Nome e email são obrigatórios" });
+  }
+
+  try {
+    const query =
+      'INSERT INTO "usuario" (nome, email) VALUES ($1, $2) RETURNING *';
+    const result = await pool.query(query, [nome, email]);
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erro ao criar usuário:", error);
+    res.status(500).json({ error: "Erro ao criar usuário" });
+  }
+});
+
+// Listar todos os usuários
+app.get("/usuarios", async (req, res) => {
+  try {
+    const query = 'SELECT * FROM "usuario"';
+    const result = await pool.query(query);
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Erro ao consultar usuários:", error);
+    res.status(500).json({ error: "Erro ao consultar usuários" });
+  }
+});
+
+// Atualizar um usuário
+app.put("/usuario/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nome, email } = req.body;
+
+  if (!nome && !email) {
+    return res
+      .status(400)
+      .json({ error: "Informe pelo menos um campo para atualizar" });
+  }
+
+  try {
+    const query = `
+      UPDATE "usuario" 
+      SET nome = COALESCE($1, nome), email = COALESCE($2, email) 
+      WHERE id = $3 
+      RETURNING *`;
+    const result = await pool.query(query, [nome, email, id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erro ao atualizar usuário:", error);
+    res.status(500).json({ error: "Erro ao atualizar usuário" });
+  }
+});
+
+app.get("/usuario/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = 'SELECT * FROM "usuario" WHERE id = $1';
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erro ao consultar usuário:", error);
+    res.status(500).json({ error: "Erro ao consultar usuário" });
+  }
+});
+
+// Deletar um usuário
+app.delete("/usuario/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = 'DELETE FROM "usuario" WHERE id = $1 RETURNING *';
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    res.status(200).json({ message: "Usuário excluído com sucesso" });
+  } catch (error) {
+    console.error("Erro ao excluir usuário:", error);
+    res.status(500).json({ error: "Erro ao excluir usuário" });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
