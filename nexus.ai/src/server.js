@@ -41,25 +41,42 @@ app.get("/hello-world", (req, res) => {
   }
 });
 
-app.post("/api/pergunte-ao-gemini", async (req, res) => {
+// app.post("/api/pergunte-ao-gemini", async (req, res) => {
+//   try {
+//     const { prompt } = req.body;
+
+//     if (!prompt) {
+//       return res.status(400).json({ error: "Prompt é necessário!" });
+//     }
+
+//     const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
+//     const model = genAI.getGenerativeModel({
+//       model: "gemini-1.5-flash",
+//     });
+
+//     const result = await model.generateContent(prompt);
+//     res.json({ completion: result.response.text });
+//   } catch (error) {
+//     console.error("Erro ao interagir com o modelo:", error);
+//     res.status(500).send({ error: "Erro ao gerar conteúdo." });
+//   }
+// });
+
+app.get("/api/consultar-gemini", async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt } = req.query;
 
     if (!prompt) {
       return res.status(400).json({ error: "Prompt é necessário!" });
     }
 
-    const genAI = new GoogleGenerativeAI({
-      apiKey: process.env.REACT_APP_GEMINI_API_KEY,
-    });
+    const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
     });
 
-    console.log("Prompt recebido:", prompt);
-
     const result = await model.generateContent(prompt);
-    res.json({ completion: result.response.text });
+    res.json({ completion: result.response.text() });
   } catch (error) {
     console.error("Erro ao interagir com o modelo:", error);
     res.status(500).send({ error: "Erro ao gerar conteúdo." });

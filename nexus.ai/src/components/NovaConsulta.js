@@ -16,9 +16,7 @@ const NovaConsulta = ({ messageGemini }) => {
     }
     try {
       const response = await messageGemini(consulta);
-      console.log(consulta);
-      console.log(response.data.completion);
-      alert(response.data.completion);
+      alert(response.completion);
     } catch (error) {
       console.error("Erro ao enviar consulta:", error);
     }

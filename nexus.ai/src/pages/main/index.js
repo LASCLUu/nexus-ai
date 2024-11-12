@@ -13,8 +13,6 @@ dotenv.config();
 const Main = () => {
   const [conteudo, setConteudo] = useState("current");
 
-  console.log(process.env.REACT_APP_POSTGRESQL_USER);
-
   const renderComponent = () => {
     if (conteudo === true) {
       return <Chat />;
