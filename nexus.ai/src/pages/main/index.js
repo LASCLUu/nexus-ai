@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./main.css";
+// import "./main.css";
 import Historico from "../../components/Historico";
 import NovaConsulta from "../../components/NovaConsulta";
 import Sugestoes from "../../components/Sugestoes";

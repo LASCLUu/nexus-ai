@@ -1,12 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import AppRoutes from "./routes";
+import { BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { AppProvider } from "./contexts/appContext";
+
+const AppRoutes = React.lazy(() => import("./routes"));
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <AppRoutes />
-  </React.StrictMode>
+  <BrowserRouter>
+    <AppProvider userId={1}>
+      <AppRoutes />
+    </AppProvider>
+  </BrowserRouter>
 );

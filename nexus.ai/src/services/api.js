@@ -4,6 +4,7 @@ const url = "http://localhost:3000/";
 
 const ENDPOINTS = {
   gemini: "/api/consultar-gemini",
+  buscarUser: "/usuario/:id",
 };
 
 export const api = axios.create({
@@ -23,6 +24,22 @@ export const messageGemini = async (message) => {
     return response.data;
   } catch (err) {
     console.log("Erro ao enviar mensagem para Gemini: ", err);
+    throw err;
+  }
+};
+
+export const buscarUser = async (id) => {
+  try {
+    const url = ENDPOINTS.buscarUser.replace(":id", id);
+    const response = await api.get(url, {
+      params: { id },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (err) {
+    console.log("Erro ao buscar usuário: ", err);
     throw err;
   }
 };

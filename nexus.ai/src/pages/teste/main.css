@@ -1,0 +1,71 @@
+/* Main container */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+}
+
+/* Header */
+header {
+  background-color: #f8f9fa;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Footer */
+footer {
+  background-color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+  font-size: 1rem;
+  border-top: 1px solid #ddd;
+  margin-top: auto; /* Push footer to the bottom */
+}
+
+/* Main content area: Sidebar + Chat */
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 100%; /* Fixed width for sidebar */
+  background-color: #f1f1f1;
+  padding: 20px;
+  height: 100%;
+  border-right: 1px solid #ddd;
+  position: relative; /* Keep it in place */
+}
+
+/* Chat container */
+.chat-container {
+  background-color: #f9f9f9;
+  height: 100%;
+  width: 100%;
+}
+
+/* Chatbox styles */
+.chat-container .chat-box {
+  background-color: white;
+  border-radius: 20px;
+  padding: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Adjust for responsiveness */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+}

@@ -1,5 +1,5 @@
-const express = require("express");
-const cors = require("cors");
+const express = require("express"); //chamada http
+const cors = require("cors"); //segurança
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const dotenv = require("dotenv");
 const { Pool } = require("pg");
@@ -353,6 +353,54 @@ app.delete("/usuario/:id", async (req, res) => {
   } catch (error) {
     console.error("Erro ao excluir usuário:", error);
     res.status(500).json({ error: "Erro ao excluir usuário" });
+  }
+});
+
+//criar uma conversa com o usuario
+
+app.post("/conversa", async (req, res) => {
+  const { usuario_id, pergunta, resposta_nexus, tipo_conversa } = req.body;
+
+  if (!usuario_id || !pergunta || !resposta_nexus) {
+    return res
+      .status(400)
+      .json({ error: "Usuário, pergunta e resposta são obrigatórios" });
+  }
+
+  try {
+    const query =
+      'INSERT INTO "conversa" (usuario_id, pergunta, resposta_nexus, tipo_conversa) VALUES ($1, $2, $3, $4) RETURNING *';
+    const result = await pool.query(query, [
+      usuario_id,
+      pergunta,
+      resposta_nexus,
+      tipo_conversa,
+    ]);
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erro ao estabelecer a conversa:", error);
+    res.status(500).json({ error: "Erro ao estabelecer a conversa" });
+  }
+});
+
+//deletar uma conversa com o usuário
+
+app.delete("/conversa/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = 'DELETE FROM "conversa" WHERE id = $1 RETURNING *';
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Conversa não encontrada" });
+    }
+
+    res.status(200).json({ message: "Conversa excluída com sucesso" });
+  } catch (error) {
+    console.error("Erro ao excluir conversa:", error);
+    res.status(500).json({ error: "Erro ao excluir conversa" });
   }
 });
 
