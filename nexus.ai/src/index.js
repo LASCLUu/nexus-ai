@@ -10,7 +10,7 @@ const AppRoutes = React.lazy(() => import("./routes"));
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
-    <AppProvider userId={2}>
+    <AppProvider userId={1}>
       <AppRoutes />
     </AppProvider>
   </BrowserRouter>
