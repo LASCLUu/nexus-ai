@@ -7,10 +7,9 @@ import {
 } from "react-router-dom";
 import React, { useEffect } from "react";
 import { useContextSelector } from "use-context-selector";
-import { AppContext } from "./contexts/appContext";
+import { AppContext } from "./contexts/AppContext";
 
-const Teste = React.lazy(() => import("./pages/teste"));
-const Main = React.lazy(() => import("./pages/main"));
+const PaginaPrincipal = React.lazy(() => import("./pages/paginaPrincipal"));
 
 function AppRoutes() {
   const signed = useContextSelector(AppContext, (context) => context.signed);
@@ -28,19 +27,15 @@ function AppRoutes() {
 
       <Route
         path="/"
-        element={signed ? <Teste /> : <Navigate to="/login" />} // Verifica se está autenticado antes de acessar
+        element={signed ? <PaginaPrincipal /> : <Navigate to="/login" />} // Verifica se está autenticado antes de acessar
       />
       <Route
         path="/teste"
-        element={signed ? <Teste /> : <Navigate to="/login" />} // Verifica também para a rota /teste
-      />
-      <Route
-        path="/alter"
-        element={signed ? <Main /> : <Navigate to="/login" />} // Verifica também para a rota /alter
+        element={signed ? <PaginaPrincipal /> : <Navigate to="/login" />} // Verifica também para a rota /teste
       />
 
       {/* Rota padrão para redirecionar caso a rota não exista */}
-      <Route path="*" element={<Navigate to="/teste" />} />
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 }

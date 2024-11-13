@@ -75,8 +75,22 @@ app.get("/api/consultar-gemini", async (req, res) => {
       model: "gemini-1.5-flash",
     });
 
-    const result = await model.generateContent(prompt);
-    res.json({ completion: result.response.text() });
+    // Primeira chamada: verificar se é uma pergunta escolar
+    const classificationPrompt = `Classifique a seguinte pergunta como 'Matéria Escolar' ou 'Outro': ${prompt}`;
+    const classificationResult = await model.generateContent(
+      classificationPrompt
+    );
+    const label = classificationResult.response.text().trim().toLowerCase();
+
+    if (label !== "matéria escolar") {
+      return res.json({
+        error:
+          "Por favor tente outra pergunta relacionada a matérias escolares para podermos avançar.",
+      });
+    } else {
+      const result = await model.generateContent(prompt);
+      res.json({ completion: result.response.text(), classification: label });
+    }
   } catch (error) {
     console.error("Erro ao interagir com o modelo:", error);
     res.status(500).send({ error: "Erro ao gerar conteúdo." });

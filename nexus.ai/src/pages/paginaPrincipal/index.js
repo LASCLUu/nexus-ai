@@ -4,8 +4,9 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Chat from "../../components/Chat/Chat"; // Importando o Chat
 import "./main.css";
 import { useEffect, useState } from "react";
+import { messageGemini } from "../../services/api";
 
-const Teste = () => {
+const PaginaPrincipal = () => {
   const [rows, setRows] = useState([]);
 
   return (
@@ -14,7 +15,7 @@ const Teste = () => {
       <div className="main-content">
         <Sidebar />
         <div className="chat-container">
-          <Chat />
+          <Chat messageGemini={messageGemini} />
         </div>
       </div>
       <Footer />
@@ -22,4 +23,4 @@ const Teste = () => {
   );
 };
 
-export default Teste;
+export default PaginaPrincipal;

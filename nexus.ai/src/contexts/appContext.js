@@ -13,6 +13,12 @@ export const AppContext = createContext({
     url_foto: "",
     data_criacao: "",
   },
+  bot: {
+    id: 1,
+    nome: "NexusIA",
+    url_foto:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdZ9dExjxM5bzlQbdh_gLIt2cWMOzQmil8TA&s",
+  },
   conversas: [],
   logs: [],
   conversa: {
@@ -26,9 +32,21 @@ export const useAppContext = () => useContext(AppContext);
 // Provedor do contexto
 export const AppProvider = (props) => {
   const { children, userId } = props;
-  const [profile, setProfile] = useState(null); // Inicializando como null
+  const [profile, setProfile] = useState({
+    id: "",
+    nome: "",
+    email: "",
+    url_foto: "",
+    data_criacao: "",
+  }); // Inicializando como objeto vazio
   const [conversas, setConversas] = useState([]);
   const [logs, setLogs] = useState([]);
+  const [bot, setBot] = useState({
+    id: 1,
+    nome: "NexusIA",
+    url_foto:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdZ9dExjxM5bzlQbdh_gLIt2cWMOzQmil8TA&s",
+  });
   const [signed, setSigned] = useState(false); // Inicializando o estado signed
   const [loading, setLoading] = useState(true); // Estado de carregamento
   const navigate = useNavigate();
@@ -36,10 +54,14 @@ export const AppProvider = (props) => {
   useEffect(() => {
     const initializeUser = async () => {
       try {
-        const userData = await buscarUser(userId);
-        console.log("Está logado");
-        setProfile(userData); // Atualizando o profile com as informações do usuário
-        setSigned(true); // Marcando como 'signed' após sucesso na recuperação do usuário
+        if (userId) {
+          const userData = await buscarUser(userId);
+          setProfile(userData); // Atualizando o profile com as informações do usuário
+          setSigned(true); // Marcando como 'signed' após sucesso na recuperação do usuário
+        } else {
+          // Caso o userId não seja passado, talvez redirecionar ou exibir erro
+          navigate("/login"); // Exemplo de redirecionamento para login
+        }
       } catch (error) {
         console.error("Erro ao inicializar o usuário:", error);
       } finally {
@@ -47,7 +69,7 @@ export const AppProvider = (props) => {
       }
     };
     initializeUser();
-  }, [userId]);
+  }, [userId, navigate]);
 
   const logConversation = async (pergunta, respostaNexus, tipoConversa) => {
     try {
@@ -72,7 +94,15 @@ export const AppProvider = (props) => {
 
   return (
     <AppContext.Provider
-      value={{ signed, profile, conversas, logs, logConversation, logSystem }}
+      value={{
+        signed,
+        profile,
+        conversas,
+        logs,
+        logConversation,
+        logSystem,
+        bot,
+      }}
     >
       {children}
     </AppContext.Provider>

@@ -19,6 +19,7 @@ CREATE TABLE "conversa" (
     id SERIAL PRIMARY KEY,
     usuario_id INT REFERENCES "usuario"(id) ON DELETE CASCADE,
     mensagem_id INT REFERENCES "mensagens"(id) ON DELETE CASCADE,
+    titulo_conversa VARCHAR(100),
     tipo_conversa VARCHAR(50),
     data_log TIMESTAMP DEFAULT CURRENT_TIMESTAMP    
 );

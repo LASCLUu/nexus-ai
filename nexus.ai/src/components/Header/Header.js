@@ -1,14 +1,12 @@
 import Logo from "../../assets/logo-preto.png";
 import { useContextSelector } from "use-context-selector";
-import { AppContext } from "../../contexts/appContext";
+import { AppContext } from "../../contexts/AppContext";
 
 const Header = () => {
   const avatar = useContextSelector(
     AppContext,
     (context) => context.profile.url_foto
   );
-
-  console.log(avatar);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary">
