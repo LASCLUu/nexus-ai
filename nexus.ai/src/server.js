@@ -18,7 +18,7 @@ const dbConfig = {
   database: process.env.REACT_APP_POSTGRESQL_DATABASE,
   ssl: {
     rejectUnauthorized: true,
-    ca: fs.readFileSync(process.env.REACT_APP_POSTGRESQL_CA, "utf8"),
+    ca: process.env.REACT_APP_POSTGRESQL_CA.replace(/\\n/g, "\n"),
   },
 };
 
