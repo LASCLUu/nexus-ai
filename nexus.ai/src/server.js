@@ -258,7 +258,7 @@ app.get("/consultar", async (req, res) => {
 
 // Criar um novo usuário
 app.post("/usuario", async (req, res) => {
-  const { nome, email } = req.body;
+  const { nome, email, url_foto } = req.body;
 
   if (!nome || !email) {
     return res.status(400).json({ error: "Nome e email são obrigatórios" });
@@ -266,8 +266,8 @@ app.post("/usuario", async (req, res) => {
 
   try {
     const query =
-      'INSERT INTO "usuario" (nome, email) VALUES ($1, $2) RETURNING *';
-    const result = await pool.query(query, [nome, email]);
+      'INSERT INTO "usuario" (nome, email, url_foto) VALUES ($1, $2, $3) RETURNING *';
+    const result = await pool.query(query, [nome, email, url_foto]);
 
     res.status(201).json(result.rows[0]);
   } catch (error) {

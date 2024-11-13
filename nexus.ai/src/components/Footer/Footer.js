@@ -7,12 +7,12 @@ const Footer = () => {
             <p className="mb-1">
               Powered by{" "}
               <a
-                href="https://openai.com/"
+                href="https://gemini.google.com/app"
                 target="_blank"
                 rel="noreferrer"
                 className="text-decoration-none"
               >
-                OpenAI©
+                Gemini
               </a>
             </p>
           </div>

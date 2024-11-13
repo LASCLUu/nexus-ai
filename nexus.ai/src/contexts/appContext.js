@@ -10,6 +10,7 @@ export const AppContext = createContext({
     id: "",
     nome: "",
     email: "",
+    url_foto: "",
     data_criacao: "",
   },
   conversas: [],

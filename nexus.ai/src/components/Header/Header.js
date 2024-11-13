@@ -1,6 +1,15 @@
 import Logo from "../../assets/logo-preto.png";
+import { useContextSelector } from "use-context-selector";
+import { AppContext } from "../../contexts/appContext";
 
 const Header = () => {
+  const avatar = useContextSelector(
+    AppContext,
+    (context) => context.profile.url_foto
+  );
+
+  console.log(avatar);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary">
       <div className="container-fluid">
@@ -17,8 +26,8 @@ const Header = () => {
         </button>
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <a className="navbar-brand mt-2 mt-lg-0" href="#">
-            <img src={Logo} height="15" alt="MDB Logo" loading="lazy" />
+          <a className="navbar-brand mt-2 mt-lg-0" href="/">
+            <img src={Logo} height="50" alt="MDB Logo" loading="lazy" />
           </a>
 
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
@@ -32,10 +41,10 @@ const Header = () => {
 
         <div className="d-flex align-items-center">
           <img
-            src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+            src={avatar}
             className="rounded-circle"
-            height="25"
-            alt="Black and White Portrait of a Man"
+            height="50"
+            alt="Avatar"
             loading="lazy"
           />
         </div>
