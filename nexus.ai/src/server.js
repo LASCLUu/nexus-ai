@@ -10,6 +10,8 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
+console.log(process.env.REACT_APP_POSTGRESQL_CA);
+
 const dbConfig = {
   user: process.env.REACT_APP_POSTGRESQL_USER,
   password: process.env.REACT_APP_POSTGRESQL_PASSWORD,
@@ -17,7 +19,7 @@ const dbConfig = {
   port: process.env.REACT_APP_POSTGRESQL_PORT,
   database: process.env.REACT_APP_POSTGRESQL_DATABASE,
   ssl: {
-    rejectUnauthorized: true,
+    rejectUnauthorized: false,
     ca: process.env.REACT_APP_POSTGRESQL_CA.replace(/\\n/g, "\n"),
   },
 };
