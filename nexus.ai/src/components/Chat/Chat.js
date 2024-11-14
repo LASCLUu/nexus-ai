@@ -12,6 +12,7 @@ const Chat = ({ messageGemini }) => {
 
   const profile = useContextSelector(AppContext, (context) => context.profile);
   const bot = useContextSelector(AppContext, (context) => context.bot);
+  const conversa = useContextSelector(AppContext, (context) => context.conversa);
 
   const handleSendMessage = async () => {
     if (inputMessage.trim()) {
@@ -67,8 +68,8 @@ const Chat = ({ messageGemini }) => {
                   <img
                     src={
                       message.sender === "user"
-                        ? profile.url_foto // Foto do usuário
-                        : bot.url_foto // Foto do bot
+                        ? profile.url_foto
+                        : bot.url_foto
                     }
                     alt={message.sender === "user" ? profile.nome : bot.nome}
                   />
@@ -78,11 +79,7 @@ const Chat = ({ messageGemini }) => {
                     <strong className="primary-font">
                       {message.sender === "user" ? profile.nome : bot.nome}
                     </strong>
-                    <small
-                      className={`pull-${
-                        message.sender === "user" ? "right" : "left"
-                      } text-muted`}
-                    >
+                    <small className={`pull-right text-muted`}>
                       <i className="fa fa-clock-o"></i>{" "}
                       {new Date().toLocaleTimeString()}
                     </small>
@@ -91,8 +88,6 @@ const Chat = ({ messageGemini }) => {
                 </div>
               </li>
             ))}
-
-          {loadingBot && <div className="message bot">Carregando...</div>}
         </ul>
       </div>
 

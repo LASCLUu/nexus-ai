@@ -117,6 +117,40 @@ Classifique a seguinte pergunta como "Matéria Escolar", "Cumprimento" e "Outro"
   }
 });
 
+app.get("/consultar", async (req, res) => {
+  const { usuario_id, acao } = req.query; // Captura os parâmetros da URL
+  console.log("Parâmetros recebidos:", req.query); // Verifique se os parâmetros estão sendo passados corretamente
+
+  if (!usuario_id || !acao) {
+    return res.status(400).json({
+      error: "Parâmetros 'usuario_id' e 'acao' são obrigatórios.",
+    });
+  }
+
+  try {
+    const logQuery = `
+    INSERT INTO "log_sistema" ("usuario_id", "tipo_log", "descricao")
+    VALUES ($1, $2, $3)
+    RETURNING * `;
+
+    const logValues = [usuario_id, "consulta", `Consulta realizada: ${acao}`];
+    const logResult = await pool.query(logQuery, logValues);
+
+    // Retorna o log registrado
+    console.log("Log registrado:", logResult.rows[0]);
+
+    res.status(200).json({
+      message: `Consulta realizada com sucesso para o usuário ${usuario_id}`,
+      log: logResult.rows[0], // Retorna o log criado
+    });
+  } catch (error) {
+    console.error("Erro ao registrar log:", error);
+    res.status(500).json({ error: "Erro ao registrar log" });
+  } finally {
+    await client.end(); // Fecha a conexão com o banco de dados
+  }
+});
+
 // CRUD LOGS
 
 // Criar log
@@ -254,40 +288,6 @@ app.delete("/log/:id", async (req, res) => {
   }
 });
 
-app.get("/consultar", async (req, res) => {
-  const { usuario_id, acao } = req.query; // Captura os parâmetros da URL
-  console.log("Parâmetros recebidos:", req.query); // Verifique se os parâmetros estão sendo passados corretamente
-
-  if (!usuario_id || !acao) {
-    return res.status(400).json({
-      error: "Parâmetros 'usuario_id' e 'acao' são obrigatórios.",
-    });
-  }
-
-  try {
-    const logQuery = `
-    INSERT INTO "log_sistema" ("usuario_id", "tipo_log", "descricao")
-    VALUES ($1, $2, $3)
-    RETURNING * `;
-
-    const logValues = [usuario_id, "consulta", `Consulta realizada: ${acao}`];
-    const logResult = await pool.query(logQuery, logValues);
-
-    // Retorna o log registrado
-    console.log("Log registrado:", logResult.rows[0]);
-
-    res.status(200).json({
-      message: `Consulta realizada com sucesso para o usuário ${usuario_id}`,
-      log: logResult.rows[0], // Retorna o log criado
-    });
-  } catch (error) {
-    console.error("Erro ao registrar log:", error);
-    res.status(500).json({ error: "Erro ao registrar log" });
-  } finally {
-    await client.end(); // Fecha a conexão com o banco de dados
-  }
-});
-
 // CRUD USUÁRIO
 
 // Criar um novo usuário
@@ -326,7 +326,7 @@ app.get("/usuarios", async (req, res) => {
 // Atualizar um usuário
 app.put("/usuario/:id", async (req, res) => {
   const { id } = req.params;
-  const { nome, email } = req.body;
+  const { nome, email, url_foto } = req.body;
 
   if (!nome && !email) {
     return res
@@ -340,7 +340,7 @@ app.put("/usuario/:id", async (req, res) => {
       SET nome = COALESCE($1, nome), email = COALESCE($2, email) 
       WHERE id = $3 
       RETURNING *`;
-    const result = await pool.query(query, [nome, email, id]);
+    const result = await pool.query(query, [nome, email, id, url_foto]);
 
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "Usuário não encontrado" });
@@ -353,6 +353,7 @@ app.put("/usuario/:id", async (req, res) => {
   }
 });
 
+//consultar um usuario
 app.get("/usuario/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -390,24 +391,25 @@ app.delete("/usuario/:id", async (req, res) => {
   }
 });
 
+//CRUD CONVERSA
+
 //criar uma conversa com o usuario
-
 app.post("/conversa", async (req, res) => {
-  const { usuario_id, pergunta, resposta_nexus, tipo_conversa } = req.body;
+  const { usuario_id, mensagem_id, titulo_conversa, tipo_conversa } = req.body;
 
-  if (!usuario_id || !pergunta || !resposta_nexus) {
-    return res
-      .status(400)
-      .json({ error: "Usuário, pergunta e resposta são obrigatórios" });
+  if (!usuario_id || !mensagem_id || !titulo_conversa || !tipo_conversa) {
+    return res.status(400).json({
+      error: "Usuário, mensagem, titulo e tipo de conversa são obrigatórios",
+    });
   }
 
   try {
     const query =
-      'INSERT INTO "conversa" (usuario_id, pergunta, resposta_nexus, tipo_conversa) VALUES ($1, $2, $3, $4) RETURNING *';
+      'INSERT INTO "conversa" (usuario_id, mensagem_id, titulo_conversa, tipo_conversa) VALUES ($1, $2, $3, $4) RETURNING *';
     const result = await pool.query(query, [
       usuario_id,
-      pergunta,
-      resposta_nexus,
+      mensagem_id,
+      titulo_conversa,
       tipo_conversa,
     ]);
 
@@ -435,6 +437,75 @@ app.delete("/conversa/:id", async (req, res) => {
   } catch (error) {
     console.error("Erro ao excluir conversa:", error);
     res.status(500).json({ error: "Erro ao excluir conversa" });
+  }
+});
+
+//listar todas as conversas
+
+//atualizar conversas
+app.put("/conversa/:id", async (req, res) => {
+  const { id, usuario_id, mensagem_id, titulo_conversa, tipo_conversa } =
+    req.body;
+
+  console.log(usuario_id);
+  console.log(mensagem_id);
+  console.log(titulo_conversa);
+  console.log(tipo_conversa);
+  console.log(id);
+
+  if (!usuario_id && !mensagem_id && !titulo_conversa && !tipo_conversa) {
+    return res
+      .status(400)
+      .json({ error: "Informe pelo menos um campo para atualizar" });
+  }
+
+  try {
+    const query = `
+      UPDATE "conversa" 
+      SET usuario_id = COALESCE($1, usuario_id), mensagem_id = COALESCE($2, mensagem_id), 
+      titulo_conversa = COALESCE($3, titulo_conversa), tipo_conversa = COALESCE($4, tipo_conversa)
+      WHERE id = $5
+      RETURNING *`;
+    const result = await pool.query(query, [
+      usuario_id,
+      mensagem_id,
+      titulo_conversa,
+      tipo_conversa,
+      id,
+    ]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Conversa não encontrada" });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erro ao atualizar a conversa:", error);
+    res.status(500).json({ error: "Erro ao atualizar a conversa" });
+  }
+});
+
+//CRUD MENSAGENS
+
+//armazenar uma mensagem com o usuario
+app.post("/mensagens", async (req, res) => {
+  const { mensagem, enviado_por } = req.body;
+
+  if (!mensagem || !enviado_por) {
+    return res
+      .status(400)
+      .json({ error: "A mensagem e quem enviou a mensagem são obrigatorios" });
+  }
+
+  try {
+    const query =
+      'INSERT INTO "mensagens" (mensagem, enviado_por) VALUES ($1, $2) RETURNING *';
+    const result = await pool.query(query, [mensagem, enviado_por]);
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erro ao armazenar a mensagem:", error);
+    res.status(500).json({ error: "Erro ao armazenar a mensagem:" });
   }
 });
 
