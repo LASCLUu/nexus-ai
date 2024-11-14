@@ -23,6 +23,11 @@ export const AppContext = createContext({
   logs: [],
   conversa: {
     id: "",
+    usuario_id: "",
+    mensagem_id: "",
+    titulo_conversa: "",
+    tipo_conversa: "",
+    data_log: "",
   },
 });
 
