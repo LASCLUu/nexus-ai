@@ -76,13 +76,33 @@ app.get("/api/consultar-gemini", async (req, res) => {
     });
 
     // Primeira chamada: verificar se é uma pergunta escolar
-    const classificationPrompt = `Classifique a seguinte pergunta como 'Matéria Escolar' ou 'Outro': ${prompt}`;
+    const classificationPrompt = `
+Você vai classificar uma pergunta em três categorias: "Matéria Escolar", "Cumprimento" e "Outro".
+- Perguntas sobre matérias escolares incluem perguntas sobre disciplinas como Matemática, Português, História, etc, podem ser considerados como "Matéria Escolar".
+- Cumprimentos, saudações e despedidas que são considerados também como "Cumprimento".
+- "Outro" inclui qualquer pergunta que não seja sobre uma matéria escolar. 
+Classifique a seguinte pergunta como "Matéria Escolar", "Cumprimento" e "Outro". Pergunta: ${prompt}
+`;
+
     const classificationResult = await model.generateContent(
       classificationPrompt
     );
-    const label = classificationResult.response.text().trim().toLowerCase();
 
-    if (label !== "matéria escolar") {
+    const label = classificationResult.response.text().toLowerCase();
+    const palavras = ["matéria escolar", "cumprimento"];
+    const contemAlgumaPalavra = palavras.some((palavra) =>
+      label.includes(palavra)
+    );
+
+    let finalLabel = "";
+
+    if (contemAlgumaPalavra) {
+      finalLabel = label;
+    } else {
+      finalLabel = "outro";
+    }
+
+    if (finalLabel === "outro") {
       return res.json({
         error:
           "Por favor tente outra pergunta relacionada a matérias escolares para podermos avançar.",
