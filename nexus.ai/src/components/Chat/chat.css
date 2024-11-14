@@ -9,17 +9,6 @@
   flex-direction: column;
 }
 
-.chat-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.chat-header h2 {
-  font-size: 20px;
-  color: #3c8dbc;
-}
-
-
 .chat-box {
   flex: 1;
   overflow-y: auto;
@@ -28,75 +17,98 @@
   background-color: #f3f1f1;  
 }
 
-.message {
-  background-color: #e0e0e0;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 20px;
-  max-width: 80%;
-  word-wrap: break-word;
+.chat-header {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #3c8dbc;
 }
 
-.message.user {
-  background-color: #d4f8e8;
-  align-self: flex-end; /* Alinha a mensagem do usuário à direita */
-}
-
-.message.bot {
-  background-color: #f1f1f1;
-  align-self: flex-start; /* Alinha a mensagem do bot à esquerda */
-}
-
-.chat li.right {
-  justify-content: flex-end; /* Alinha a mensagem do usuário à direita */
-}
-
-.chat li.left {
-  justify-content: flex-start; /* Alinha a mensagem do bot à esquerda */
-}
-
-.chat-message {
-  padding: 10px;
-  list-style: none;
-}
-
-.chat li {
+.chat-input {
   display: flex;
-  flex-direction: row;
-  margin-bottom: 15px;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.chat-input button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.chat-input button:hover {
+  background-color: #0056b3;
+}
+
+.chat-input input:focus,
+.chat-input button:focus {
+  outline: none;
+}
+
+.chat-input input::placeholder {
+  color: #888;
+}
+
+small, .small {
+  font-size: 85%;
 }
 
 
-.chat li.right .chat-body {
-  margin-right: 70px;
-  background-color: #fff;
+.chat {
+    list-style: none;
+    margin: 0;
 }
 
-.chat-img {
-  margin: 0 10px;
-}
 
-.chat-img img {
+.chat li img {
   width: 45px;
   height: 45px;
-  border-radius: 50%;
+  border-radius: 50em;
+  -moz-border-radius: 50em;
+  -webkit-border-radius: 50em;
+}
+
+img {
+  max-width: 100%;
 }
 
 .chat-body {
+  padding-bottom: 20px;
+}
+
+.chat li.left .chat-body {
+  margin-left: 14%;
+  background-color: #fff;
+}
+
+.chat li .chat-body {
   position: relative;
   font-size: 11px;
   padding: 10px;
   border: 1px solid #f1f5fc;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-  max-width: 60%;
+  box-shadow: 0 1px 1px rgba(0,0,0,.05);
+  -moz-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
 }
 
-.chat-body .header {
+.chat li .chat-body .header {
   padding-bottom: 5px;
   border-bottom: 1px solid #f1f5fc;
 }
 
-.chat-body p {
+.chat li .chat-body p {
   margin: 0;
 }
 
@@ -136,52 +148,47 @@
   -o-transform: rotate(45deg);
 }
 
-
-.chat-input {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+.chat li {
+  margin: 15px 0;
 }
 
-.chat-input input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.chat-input button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.chat-input button:hover {
-  background-color: #0056b3;
-}
-
-.chat-input input:focus,
-.chat-input button:focus {
-  outline: none;
-}
-
-.chat-input input::placeholder {
-  color: #888;
-}
-
-.chat li.left .chat-body {
-  margin-left: 70px;
+.chat li.right .chat-body {
+  margin-right: 14%;
   background-color: #fff;
 }
 
-.chat li {
-  display: flex;
-  margin-bottom: 15px;
-  justify-content: flex-start; /* Mensagem do bot à esquerda por padrão */
+.chat-box {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  transition: all .5s ease;
+  -webkit-transition: all .5s ease;
+  -moz-transition: all .5s ease;
+  -ms-transition: all .5s ease;
+  -o-transition: all .5s ease;
 }
+
+.chat-img {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.pull-left {
+  float: left;
+  margin-right: 10px; /* Adiciona um espaçamento entre a imagem e o conteúdo */
+}
+
+.pull-right {
+  float: right;
+  margin-left: 10px; /* Adiciona um espaçamento entre a imagem e o conteúdo */
+}
+
+/* Garantir que as mensagens estejam alinhadas corretamente */
+.chat li.left .chat-img {
+  float: left;
+}
+
+.chat li.right .chat-img {
+  float: right;
+}
+
 
