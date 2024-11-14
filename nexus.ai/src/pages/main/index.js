@@ -49,12 +49,11 @@ const Main = () => {
             id="open-ai-link"
             rel="noreferrer"
           >
-            OpenAI©
           </a>
         </p>
         <p id="parceria">
           Parceria: Universidade São <br />
-          Judas Tadeu(USJT)
+          Judas Tadeu(USJT)&copy;
         </p>
         <p id="trabalho">
           Trabalho semestral (A3) UC: <br /> Sd. Mobile - Professor Bossini

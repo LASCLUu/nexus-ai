@@ -19,7 +19,7 @@ const Header = () => {
           aria-controls="navbarSupportedContent"
           aria-expanded="false"
           aria-label="Toggle navigation"
-        >
+          >
           <i className="fas fa-bars"></i>
         </button>
 
@@ -44,10 +44,13 @@ const Header = () => {
             height="50"
             alt="Avatar"
             loading="lazy"
-          />
+            />
         </div>
       </div>
+
+      <button></button>
     </nav>
+
   );
 };
 
