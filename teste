@@ -1,0 +1,252 @@
+[33mcommit c99b8739ef22dba2aca9a00adc37fb0f6eedd2f3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Wed Nov 13 20:21:21 2024 -0300
+
+    login
+
+[33mcommit 0d8c9494d1d38c8a1573c444f9ddd03e5550c746[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Wed Nov 13 13:55:22 2024 -0300
+
+    melhorado front-end, mas falta terminar
+
+[33mcommit 024635e632ebf232e2432b063738ee13a7c8c21b[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Wed Nov 13 03:37:52 2024 -0300
+
+    melhorado o bd
+
+[33mcommit d63fbdbe4fcf18c6b43b35f1ff0b5006f3b9d556[m
+Merge: f39c96a 02cc71e
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Wed Nov 13 02:55:15 2024 -0300
+
+    melhorado front-end
+
+[33mcommit 02cc71e637006780cb52bf9d44ac4a316e06e2ff[m
+Merge: a13c495 a1d5773
+Author: GabrielGamaMouras <gabrielgamamouras@gmail.com>
+Date: Tue Nov 12 22:39:37 2024 -0300
+
+    Criar endpoints referente a conversa
+
+[33mcommit a13c4953031c84ea88210826dd6e2a8e34b9bd14[m
+Author: GabrielGamaMouras <gabrielgamamouras@gmail.com>
+Date: Tue Nov 12 22:37:22 2024 -0300
+
+    Criar endpoints referente a conversa
+
+[33mcommit f39c96a0d87f244509900efb0e8815936c73dff5[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Tue Nov 12 21:50:12 2024 -0300
+
+    env melhorado
+
+[33mcommit a1d5773efa53883886e1ba221be30e3a468b0486[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Tue Nov 12 21:30:58 2024 -0300
+
+    env melhorado
+
+[33mcommit f6081829111c3cde39dd3571512befd72984d42b[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Tue Nov 12 21:20:27 2024 -0300
+
+    resolvido env
+
+[33mcommit 3c9906f6f5e8e274dcfa24cd924422a4d3c8a438[m[33m ([m[1;33mtag: [m[1;33mv1.2.0[m[33m)[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Mon Nov 11 21:43:36 2024 -0300
+
+    entrega07(back): faz back se integrar com API do ChatGPT
+
+[33mcommit 4dffd844251b874f14964d9c244975c6e84dc620[m[33m ([m[1;33mtag: [m[1;33mv1.1.0[m[33m)[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Mon Nov 11 21:16:51 2024 -0300
+
+    entrega06(back): registra logs na base
+
+[33mcommit 680ce2bb9e0c92af037b939b804a871923f13b63[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Wed Nov 6 11:45:02 2024 -0300
+
+    atualiza: front-end
+
+    atualização da página chat;
+    em progresso
+
+[33mcommit afedcdceb7e793f51554613b37feadff36896445[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Wed Nov 6 10:50:56 2024 -0300
+
+    Update api.js
+
+[33mcommit 6f693e96562dda6f7b25fe5c04f70c7d2807af8d[m
+Author: gustavo-pupo <gusfepupo@gmail.com>
+Date: Mon Nov 4 20:10:49 2024 -0300
+
+    adiciona lógica de troca de renderização de conteúdos
+
+[33mcommit 7421b560a01445a7357b9616aa743639afd2e33f[m
+Author: Vinicius Scaramello <vinicius.neres@bib.com.br>
+Date: Tue Oct 29 09:40:31 2024 -0300
+
+    v.1.0.2 - Adiciona Script de criação do BD e tabela de logs
+
+[33mcommit 476e1677950cdfd01b2568019adb87f6dd9c20f6[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Tue Oct 22 01:23:32 2024 -0300
+
+    Trabalhando Front-End novo
+
+[33mcommit 4941633a94b5a8efface9d76c468fb123d34b946[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Mon Oct 21 21:41:34 2024 -0300
+
+    Criado endpoint Gemini
+
+[33mcommit 61eb8da6f0cab0bc507bab0791fe1367e1a6e69d[m[33m ([m[1;33mtag: [m[1;33mv1.0.1[m[33m)[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Mon Oct 21 07:30:09 2024 -0300
+
+    created server.js
+
+[33mcommit 57e6bde356ff8b02bd0b8cedaa4d8432da7ff486[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Thu Oct 17 16:52:18 2024 -0300
+
+    Update App.js
+
+[33mcommit e29af9a6255b7ce15a07f057fe95a7026f0b7023[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Thu Oct 17 16:51:48 2024 -0300
+
+    organiza elemntos de interface
+
+    Em processo de teste para a funcionalidade de ao clicar no botão consultar, abrir uma nova tela com a resposta do GPT
+
+[33mcommit 5da6dd287029cba79672db6741ad612dc5e0fd0d[m
+Author: gustavo-pupo <gusfepupo@gmail.com>
+Date: Mon Oct 14 22:35:09 2024 -0300
+
+    melhora detalhes do front
+
+[33mcommit c4fdce6fc3ff0067aaa8f3c16e1badbf49a1743f[m
+Merge: c380b22 3b03242
+Author: gustavo-pupo <gusfepupo@gmail.com>
+Date: Mon Oct 14 21:12:44 2024 -0300
+
+    Merge branch 'main' of https://github.com/LASCLUu/nexus-ai
+
+[33mcommit 3b0324267c6e548fc41363a33c7c3711aee1c8c3[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Mon Oct 14 17:27:58 2024 -0300
+
+    Modficado elemntos gráficos
+
+[33mcommit bbb4bddc5b2a12b3377a87e09ad0a33eadd35ed5[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Mon Oct 14 14:42:38 2024 -0300
+
+    finaliza interface gráfica
+
+[33mcommit cfaa33baced064dd4652992b7b9ea8b1fb7e878e[m[33m ([m[1;33mtag: [m[1;33mv1.0.0[m[33m)[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Wed Oct 9 15:57:35 2024 -0300
+
+    Alteração(front) - pequenas mudanças
+
+    Mudanças:
+    font-style adicionado;
+    coloração de alguns elementos alterada;
+    criação do novo componente "Sugestão".
+
+[33mcommit eb7bcd98fe030efb629add9f4d035b1a1f83107a[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Wed Oct 9 15:54:12 2024 -0300
+
+    alteração(front)
+
+    Mudanças:
+    font-style adicionado;
+    coloração de alguns elementos alterada;
+    criação do novo componente "Sugestão".
+
+[33mcommit 61b0cca5c577ed9c2f38e2d6bed18102f5b44f76[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Wed Oct 2 19:46:55 2024 -0300
+
+    Update README.md
+
+[33mcommit 2260170534160ed0bc5a9762878d7716aee95239[m
+Author: Joao Victor Varella Siqueira <joaovvarella@gmail.com>
+Date: Wed Oct 2 19:40:06 2024 -0300
+
+    Update README.md
+
+[33mcommit 97dd9a012c241a93cefca9848603c84fa542f450[m
+Author: GabrielGamaMouras <gabrielgamamouras@gmail.com>
+Date: Mon Sep 30 21:42:21 2024 -0300
+
+    Create README.md
+
+[33mcommit c380b22415fc39fe027ac72bee2c6acb8d9e3d6b[m
+Author: gustavo-pupo <gusfepupo@gmail.com>
+Date: Sun Sep 29 16:48:41 2024 -0300
+
+    Interface Principal Iniciada
+
+[33mcommit 1106e14c273c6715cd382cb6ffff6d47eca89869[m[33m ([m[1;33mtag: [m[1;33mv0.0.2[m[33m)[m
+Author: gustavo-pupo <gusfepupo@gmail.com>
+Date: Sun Sep 29 16:45:26 2024 -0300
+
+    Interface Principal Iniciada
+
+[33mcommit 4e325372233e09a51d319bebfeee8c3f04d43f25[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Fri Sep 27 15:30:16 2024 -0300
+
+    Update .gitignore
+
+[33mcommit 9c1109b4bf022437ffc08d5545ca257181c19a23[m
+Author: Lucas Augustho <112188014+LASCLUu@users.noreply.github.com>
+Date: Fri Sep 27 15:28:15 2024 -0300
+
+    Delete links_uteis.txt
+
+[33mcommit b25a9d2db57b49a35b60a2fbc27da56e6d91c81b[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Fri Sep 27 15:27:40 2024 -0300
+
+    Update .gitignore
+
+[33mcommit cb6e9a6d47c0bc85578b50f916f4c80cee60fb8a[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Fri Sep 27 15:26:50 2024 -0300
+
+    Update .gitignore
+
+[33mcommit 988c4ff4d64db29f800310184393fe5443205d11[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Fri Sep 27 15:25:09 2024 -0300
+
+    Update .gitignore
+
+[33mcommit 981f919ffba619ab9b473d678136ff745c79aea7[m
+Merge: 6fa983f ef1ec38
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Fri Sep 27 15:24:22 2024 -0300
+
+    Merge branch 'main' of https://github.com/LASCLUu/nexus-ai
+
+[33mcommit 6fa983f01d083855992abb075bf38523e66824df[m[33m ([m[1;33mtag: [m[1;33mv0.0.1[m[33m)[m
+Author: Lucas Candido <augusthocandido3@outlook.com>
+Date: Fri Sep 27 15:24:02 2024 -0300
+
+    criação do app React
+
+    A partir de agora, as começa o versionamento oficial do projeto (v0.1).
+
+[33mcommit ef1ec38451a7d927a1e63141e9f6439022489d54[m
+Author: Lucas Augustho <112188014+LASCLUu@users.noreply.github.com>
+Date: Fri Sep

@@ -23,10 +23,17 @@ const Chat = ({ messageGemini }) => {
         setInputMessage("");
 
         const response = await messageGemini(inputMessage);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: response.error, sender: "bot" },
-        ]);
+        if (response.error) {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: response.error, sender: "bot" },
+          ]);
+        } else {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: response.completion, sender: "bot" },
+          ]);
+        }
       } catch (error) {
         console.error("Erro ao enviar consulta:", error);
       }
