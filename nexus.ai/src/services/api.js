@@ -5,6 +5,7 @@ const url = "http://localhost:3000/";
 const ENDPOINTS = {
   gemini: "/api/consultar-gemini",
   buscarUser: "/usuario/:id",
+  atualizarConversa: ""
 };
 
 export const api = axios.create({

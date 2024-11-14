@@ -117,6 +117,40 @@ Classifique a seguinte pergunta como "Matéria Escolar", "Cumprimento" e "Outro"
   }
 });
 
+app.get("/consultar", async (req, res) => {
+  const { usuario_id, acao } = req.query; // Captura os parâmetros da URL
+  console.log("Parâmetros recebidos:", req.query); // Verifique se os parâmetros estão sendo passados corretamente
+
+  if (!usuario_id || !acao) {
+    return res.status(400).json({
+      error: "Parâmetros 'usuario_id' e 'acao' são obrigatórios.",
+    });
+  }
+
+  try {
+    const logQuery = `
+    INSERT INTO "log_sistema" ("usuario_id", "tipo_log", "descricao")
+    VALUES ($1, $2, $3)
+    RETURNING * `;
+
+    const logValues = [usuario_id, "consulta", `Consulta realizada: ${acao}`];
+    const logResult = await pool.query(logQuery, logValues);
+
+    // Retorna o log registrado
+    console.log("Log registrado:", logResult.rows[0]);
+
+    res.status(200).json({
+      message: `Consulta realizada com sucesso para o usuário ${usuario_id}`,
+      log: logResult.rows[0], // Retorna o log criado
+    });
+  } catch (error) {
+    console.error("Erro ao registrar log:", error);
+    res.status(500).json({ error: "Erro ao registrar log" });
+  } finally {
+    await client.end(); // Fecha a conexão com o banco de dados
+  }
+});
+
 // CRUD LOGS
 
 // Criar log
@@ -254,40 +288,6 @@ app.delete("/log/:id", async (req, res) => {
   }
 });
 
-app.get("/consultar", async (req, res) => {
-  const { usuario_id, acao } = req.query; // Captura os parâmetros da URL
-  console.log("Parâmetros recebidos:", req.query); // Verifique se os parâmetros estão sendo passados corretamente
-
-  if (!usuario_id || !acao) {
-    return res.status(400).json({
-      error: "Parâmetros 'usuario_id' e 'acao' são obrigatórios.",
-    });
-  }
-
-  try {
-    const logQuery = `
-    INSERT INTO "log_sistema" ("usuario_id", "tipo_log", "descricao")
-    VALUES ($1, $2, $3)
-    RETURNING * `;
-
-    const logValues = [usuario_id, "consulta", `Consulta realizada: ${acao}`];
-    const logResult = await pool.query(logQuery, logValues);
-
-    // Retorna o log registrado
-    console.log("Log registrado:", logResult.rows[0]);
-
-    res.status(200).json({
-      message: `Consulta realizada com sucesso para o usuário ${usuario_id}`,
-      log: logResult.rows[0], // Retorna o log criado
-    });
-  } catch (error) {
-    console.error("Erro ao registrar log:", error);
-    res.status(500).json({ error: "Erro ao registrar log" });
-  } finally {
-    await client.end(); // Fecha a conexão com o banco de dados
-  }
-});
-
 // CRUD USUÁRIO
 
 // Criar um novo usuário
@@ -391,19 +391,16 @@ app.delete("/usuario/:id", async (req, res) => {
   }
 });
 
-//CRUDE conversa
+//CRUD CONVERSA
 
 //criar uma conversa com o usuario
-
 app.post("/conversa", async (req, res) => {
   const { usuario_id, mensagem_id, titulo_conversa, tipo_conversa } = req.body;
 
   if (!usuario_id || !mensagem_id || !titulo_conversa || !tipo_conversa) {
-    return res
-      .status(400)
-      .json({
-        error: "Usuário, mensagem, titulo e tipo de conversa são obrigatórios",
-      });
+    return res.status(400).json({
+      error: "Usuário, mensagem, titulo e tipo de conversa são obrigatórios",
+    });
   }
 
   try {
@@ -488,10 +485,9 @@ app.put("/conversa/:id", async (req, res) => {
   }
 });
 
-//CRUDE mensagens
+//CRUD MENSAGENS
 
 //armazenar uma mensagem com o usuario
-
 app.post("/mensagens", async (req, res) => {
   const { mensagem, enviado_por } = req.body;
 

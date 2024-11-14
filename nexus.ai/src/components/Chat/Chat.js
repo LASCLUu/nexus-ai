@@ -12,6 +12,7 @@ const Chat = ({ messageGemini }) => {
 
   const profile = useContextSelector(AppContext, (context) => context.profile);
   const bot = useContextSelector(AppContext, (context) => context.bot);
+  const conversa = useContextSelector(AppContext, (context) => context.conversa);
 
   const handleSendMessage = async () => {
     if (inputMessage.trim()) {
