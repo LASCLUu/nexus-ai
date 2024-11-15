@@ -11,17 +11,13 @@ const Header = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary">
       <div className="container-fluid">
-        <button
-          data-mdb-collapse-init
-          className="navbar-toggler"
-          type="button"
-          data-mdb-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-          >
-          <i className="fas fa-bars"></i>
-        </button>
+          
+      <input id="checkbox" type="checkbox" />
+        <label class="toggle" for="checkbox">
+            <div id="bar1" class="bars"></div>
+            <div id="bar2" class="bars"></div>
+            <div id="bar3" class="bars"></div>
+        </label>
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <a className="navbar-brand mt-2 mt-lg-0" href="/">
@@ -47,8 +43,6 @@ const Header = () => {
             />
         </div>
       </div>
-
-      <button></button>
     </nav>
 
   );

@@ -1,10 +1,10 @@
 import { useState } from "react";
 // import "./main.css";
-import Historico from "../../components/Historico";
-import NovaConsulta from "../../components/NovaConsulta";
-import Sugestoes from "../../components/Sugestoes";
+import Historico from "../../components/otherComponents/Historico";
+import NovaConsulta from "../../components/otherComponents/NovaConsulta";
+import Sugestoes from "../../components/otherComponents/Sugestoes";
 import logo from "../../assets/logo-nexus.png";
-import Chat from "../../components/Chat";
+import Chat from "../../components/otherComponents/Chat";
 import { messageGemini } from "../../services/api";
 import dotenv from "dotenv";
 
@@ -52,11 +52,10 @@ const Main = () => {
           </a>
         </p>
         <p id="parceria">
-          Parceria: Universidade São <br />
-          Judas Tadeu(USJT)&copy;
+          Parceria: Universidade São Judas Tadeu(USJT)&copy;
         </p>
         <p id="trabalho">
-          Trabalho semestral (A3) UC: <br /> Sd. Mobile - Professor Bossini
+          Trabalho semestral (A3) UC: Sd. Mobile - Professor Bossini
         </p>
       </footer>
     </>

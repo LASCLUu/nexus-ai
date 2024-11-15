@@ -3,8 +3,8 @@ import React from "react";
 const Sidebar = () => {
   return (
     <div
-      className="d-flex flex-column align-items-stretch flex-shrink-0 bg-white"
-      style={{ width: "380px" }}
+      className=""
+      id="sidebar"
     >
       <a
         href="/"
