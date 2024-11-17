@@ -95,14 +95,14 @@ img {
 }
 
 .chat li.left .chat-body {
-  margin-left: 6%;
+  margin-left: 8%;
   background-color: #fff;
 }
 
 .chat li .chat-body {
   position: relative;
   font-size: 1rem;
-  padding: 1%;
+  padding: 2%;
   border: 1px solid #f1f5fc;
   box-shadow: 0 1px 1px rgba(0,0,0,.05);
   -moz-box-shadow: 0 1px 1px rgba(0,0,0,.05);

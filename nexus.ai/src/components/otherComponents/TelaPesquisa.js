@@ -6,7 +6,6 @@ const TelaPesquisa = () => {
             <div className="interfaceTelaResposta">
                 <h1 className="h1-resposta">Aqui está sua resposta:</h1>
                 <label for="respostaGPT" id="resposta-gpt">GPT:</label>
-
             </div>
         </div>
     )

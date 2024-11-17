@@ -2,7 +2,7 @@ import Logo from "../../assets/logo-preto.png";
 import { useContextSelector } from "use-context-selector";
 import { AppContext } from "../../contexts/AppContext";
 
-const Header = () => {
+const Header = ({ toggleSidebar, showSidebar}) => {
   const avatar = useContextSelector(
     AppContext,
     (context) => context.profile.url_foto
@@ -11,13 +11,14 @@ const Header = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary">
       <div className="container-fluid">
-          
+
       <input id="checkbox" type="checkbox" />
-        <label class="toggle" for="checkbox">
+        <label onClick={toggleSidebar} className="toggle" for="checkbox">
             <div id="bar1" class="bars"></div>
             <div id="bar2" class="bars"></div>
             <div id="bar3" class="bars"></div>
         </label>
+      
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <a className="navbar-brand mt-2 mt-lg-0" href="/">
