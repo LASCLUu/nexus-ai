@@ -8,16 +8,33 @@ import { messageGemini, tituloGemini } from "../../services/api";
 
 const PaginaPrincipal = () => {
   const [rows, setRows] = useState([]);
+  const [showSidebar, setShowSidebar] = useState(true);
+
+  const mostraSideBar = () => {
+    if(showSidebar){
+      return(
+        <div className="main-content">
+          <Sidebar />
+          <div className="chat-container">
+            <Chat messageGemini={messageGemini} />
+          </div>
+        </div>
+      )
+    } else {
+      return (
+        <div className="main-content">
+          <div className="chat-container">
+            <Chat messageGemini={messageGemini} />
+          </div>
+        </div>
+      )
+    }
+  }
 
   return (
     <div className="page-container">
-      <Header />
-      <div className="main-content">
-        <Sidebar />
-        <div className="chat-container">
-          <Chat messageGemini={(messageGemini, tituloGemini)} />
-        </div>
-      </div>
+      <Header toggleSidebar={() => setShowSidebar(!showSidebar)} showSidebar={showSidebar} />
+        {mostraSideBar()}
       <Footer />
     </div>
   );

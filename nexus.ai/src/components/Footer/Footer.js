@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="bg-light text-dark text-center py-3">
+    <footer className="bg-light text-dark text-center py-2">
       <div className="container">
         <div className="row">
           <div className="col-12 col-md-4">
@@ -12,12 +12,12 @@ const Footer = () => {
                 rel="noreferrer"
                 className="text-decoration-none"
               >
-                Gemini
+                Gemini&copy;
               </a>
             </p>
           </div>
           <div className="col-12 col-md-4">
-            <p className="mb-1">Universidade São Judas Tadeu (USJT)</p>
+            <p className="mb-1">Universidade São Judas Tadeu (USJT)&copy;</p>
           </div>
           <div className="col-12 col-md-4">
             <p className="mb-1">

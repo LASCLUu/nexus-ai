@@ -13,15 +13,18 @@
   flex: 1;
   overflow-y: auto;
   margin-bottom: 20px;
-  padding-right: 10px;
-  background-color: #f3f1f1;  
+  padding-right: 0px;
+  background-color: #f3f1f1;
 }
 
 .chat-header {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 20px;
   color: #3c8dbc;
+}
+
+.chat-header h2{
+  font-size: 1.5rem;
 }
 
 .chat-input {
@@ -69,6 +72,9 @@ small, .small {
 .chat {
     list-style: none;
     margin: 0;
+    padding: 0;
+    float: left;
+    width: 100%;
 }
 
 
@@ -89,14 +95,14 @@ img {
 }
 
 .chat li.left .chat-body {
-  margin-left: 14%;
+  margin-left: 8%;
   background-color: #fff;
 }
 
 .chat li .chat-body {
   position: relative;
-  font-size: 11px;
-  padding: 10px;
+  font-size: 1rem;
+  padding: 2%;
   border: 1px solid #f1f5fc;
   box-shadow: 0 1px 1px rgba(0,0,0,.05);
   -moz-box-shadow: 0 1px 1px rgba(0,0,0,.05);
@@ -135,11 +141,11 @@ img {
   top: 10px;
   right: -8px;
   display: inline-block;
-  background: #fff;
+  background: lightgray;
   width: 16px;
   height: 16px;
-  border-top: 1px solid #f1f5fc;
-  border-right: 1px solid #f1f5fc;
+  border-top: 1px solid lightgray;
+  border-right: 1px solid lightgray;
   content: '';
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
@@ -149,16 +155,17 @@ img {
 }
 
 .chat li {
-  margin: 15px 0;
+  width: 100%;
+  margin: 1% 0;
 }
 
 .chat li.right .chat-body {
-  margin-right: 14%;
-  background-color: #fff;
+  margin-right: 0;
+  background-color: lightgray;
 }
 
 .chat-box {
-  padding: 15px;
+  padding: 0%;
   border-top: 1px solid #eee;
   transition: all .5s ease;
   -webkit-transition: all .5s ease;
@@ -174,12 +181,12 @@ img {
 
 .pull-left {
   float: left;
-  margin-right: 10px; /* Adiciona um espaçamento entre a imagem e o conteúdo */
+  margin-right: 0; /* Adiciona um espaçamento entre a imagem e o conteúdo */
 }
 
 .pull-right {
   float: right;
-  margin-left: 10px; /* Adiciona um espaçamento entre a imagem e o conteúdo */
+  margin-left: 0; /* Adiciona um espaçamento entre a imagem e o conteúdo */
 }
 
 /* Garantir que as mensagens estejam alinhadas corretamente */
@@ -191,4 +198,46 @@ img {
   float: right;
 }
 
+@media (max-width: 768px) {
+  .chat-img {
+    display: none;
+  }
 
+  .chat li.left .chat-body {
+    margin-left: 0;
+    background-color: #fff;
+  }
+
+  .chat li .chat-body {
+    position: relative;
+    font-size: 0.7rem;
+    padding: 4%;
+    border: 1px solid #f1f5fc;
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    -moz-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+  }
+
+  .chat li.right .chat-body {
+    margin-right: 0;
+    background-color: lightgray;
+  }
+
+  .chat li.right .chat-body:before {
+    position: absolute;
+    top: 10px;
+    right: -8px;
+    display: inline-block;
+    background: lightgray;
+    width: 16px;
+    height: 16px;
+    border-top: 1px solid lightgray;
+    border-right: 1px solid lightgray;
+    content: '';
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+  }
+}

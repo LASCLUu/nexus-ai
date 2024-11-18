@@ -10,6 +10,8 @@ import { useContextSelector } from "use-context-selector";
 import { AppContext } from "./contexts/AppContext";
 
 const PaginaPrincipal = React.lazy(() => import("./pages/paginaPrincipal"));
+const Main = React.lazy(() => import("./pages/main"));
+
 
 function AppRoutes() {
   const signed = useContextSelector(AppContext, (context) => context.signed);
@@ -23,15 +25,20 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<h1>Tela de Login</h1>} />
+      <Route path="login" element={<h1>Tela de Login</h1>} />
 
       <Route
         path="/"
         element={signed ? <PaginaPrincipal /> : <Navigate to="/login" />} // Verifica se está autenticado antes de acessar
       />
       <Route
-        path="/teste"
+        path="teste"
         element={signed ? <PaginaPrincipal /> : <Navigate to="/login" />} // Verifica também para a rota /teste
+      />
+
+      <Route 
+        path="chat"
+        element={<Main />}
       />
 
       {/* Rota padrão para redirecionar caso a rota não exista */}

@@ -14,14 +14,26 @@ header {
   border-bottom: 1px solid #ddd;
 }
 
+body{
+  scrollbar-color: #888 #f4f4f4;
+  scrollbar-width: thin;
+}
+
 /* Footer */
-footer {
+/* footer {
   background-color: #f8f9fa;
-  padding: 10px;
+  padding: 1px;
   text-align: center;
-  font-size: 1rem;
+  height: 2px;
   border-top: 1px solid #ddd;
-  margin-top: auto; /* Push footer to the bottom */
+  margin-top: auto; /* Push footer to the bottom 
+  position: relative;
+} 
+ */
+
+footer a{
+  text-decoration: none;
+  color: rgb(24, 24, 24);
 }
 
 /* Main content area: Sidebar + Chat */
@@ -32,14 +44,15 @@ footer {
 }
 
 /* Sidebar */
-.sidebar {
-  width: 100%; /* Fixed width for sidebar */
+#sidebar {
+  width: 35%;
   background-color: #f1f1f1;
   padding: 20px;
   height: 100%;
   border-right: 1px solid #ddd;
-  position: relative; /* Keep it in place */
+  position: relative;
 }
+
 
 /* Chat container */
 .chat-container {
@@ -50,10 +63,40 @@ footer {
 
 /* Chatbox styles */
 .chat-container .chat-box {
-  border-radius: 20px;
+  border-radius: 6px;
   padding: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
 }
+
+::-webkit-scrollbar{
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f4f4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #747474, #3d3d3d);
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00000000;
+}
+
+#checkbox {
+  display: none;
+}
+
 
 /* Adjust for responsiveness */
 @media (max-width: 768px) {
@@ -61,10 +104,49 @@ footer {
     flex-direction: column;
   }
 
-  .sidebar {
+  #sidebar {
     width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid #ddd;
   }
+
+  footer {
+    display: none; /* Esconde o footer no mobile */
+  }
+
+  body{
+    font-size: 12px;
+  }
+
+  #checkbox {
+    display: none;
+  }
+  
+  .toggle {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10%;
+    transition-duration: .3s;
+  }
+  
+  .bars {
+    width: 70%;
+    height: 4px;
+    background-color: black;
+    border-radius: 5px;
+    transition-duration: .6s;
+  }
+  
+  #checkbox:checked + .toggle .bars {
+    /* display: none; */
+    rotate: 360deg;
+  }
+
 }
+
+
+
