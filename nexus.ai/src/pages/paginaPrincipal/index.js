@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Chat from "../../components/Chat/Chat"; // Importando o Chat
 import "./main.css";
 import { useEffect, useState } from "react";
-import { messageGemini } from "../../services/api";
+import { messageGemini, tituloGemini } from "../../services/api";
 
 const PaginaPrincipal = () => {
   const [rows, setRows] = useState([]);
@@ -15,7 +15,7 @@ const PaginaPrincipal = () => {
       <div className="main-content">
         <Sidebar />
         <div className="chat-container">
-          <Chat messageGemini={messageGemini} />
+          <Chat messageGemini={(messageGemini, tituloGemini)} />
         </div>
       </div>
       <Footer />

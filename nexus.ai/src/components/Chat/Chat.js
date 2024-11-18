@@ -3,7 +3,7 @@ import "./chat.css";
 import { useContextSelector } from "use-context-selector";
 import { AppContext } from "../../contexts/AppContext";
 
-const Chat = ({ messageGemini }) => {
+const Chat = ({ messageGemini, tituloGemini }) => {
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([
     { text: "Olá! Como Nexus pode te ajudar hoje?", sender: "bot" },
@@ -12,7 +12,10 @@ const Chat = ({ messageGemini }) => {
 
   const profile = useContextSelector(AppContext, (context) => context.profile);
   const bot = useContextSelector(AppContext, (context) => context.bot);
-  const conversa = useContextSelector(AppContext, (context) => context.conversa);
+  const conversa = useContextSelector(
+    AppContext,
+    (context) => context.conversa
+  );
 
   const handleSendMessage = async () => {
     if (inputMessage.trim()) {
@@ -22,6 +25,17 @@ const Chat = ({ messageGemini }) => {
           { text: inputMessage, sender: "user" },
         ]);
         setInputMessage("");
+
+        if (conversa.titulo_conversa === "") {
+          const titulo = await tituloGemini();
+          if(titulo === "Não"){
+            return
+          }else{
+            
+          }
+        } else {
+
+        }
 
         const response = await messageGemini(inputMessage);
         if (response.error) {

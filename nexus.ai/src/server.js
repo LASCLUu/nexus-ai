@@ -117,6 +117,42 @@ Classifique a seguinte pergunta como "Matéria Escolar", "Cumprimento" e "Outro"
   }
 });
 
+app.get("/api/titulo-gemini", async (req, res) => {
+  try {
+    const { prompt } = req.query;
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt é necessário!" });
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+    });
+
+    // Primeira chamada: verificar se é uma pergunta escolar
+    const classificationPrompt = `
+Essa pergunta pode ser levada em consideração para ser usada como titulo da conversa? Responda com o "Titulo da Conversa" ou "Não". Pergunta: ${prompt}
+`;
+
+    const classificationResult = await model.generateContent(
+      classificationPrompt
+    );
+
+    const label = classificationResult.response.text().toLowerCase();
+    const palavras = ["Não"];
+    const contemAlgumaPalavra = palavras.some((palavra) =>
+      label.includes(palavra)
+    );
+
+    const result = await model.generateContent(prompt);
+    res.json({ completion: result.response.text(), classification: label });
+  } catch (error) {
+    console.error("Erro ao interagir com o modelo:", error);
+    res.status(500).send({ error: "Erro ao gerar conteúdo." });
+  }
+});
+
 app.get("/consultar", async (req, res) => {
   const { usuario_id, acao } = req.query; // Captura os parâmetros da URL
   console.log("Parâmetros recebidos:", req.query); // Verifique se os parâmetros estão sendo passados corretamente
@@ -421,7 +457,6 @@ app.post("/conversa", async (req, res) => {
 });
 
 //deletar uma conversa com o usuário
-
 app.delete("/conversa/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -446,12 +481,6 @@ app.delete("/conversa/:id", async (req, res) => {
 app.put("/conversa/:id", async (req, res) => {
   const { id, usuario_id, mensagem_id, titulo_conversa, tipo_conversa } =
     req.body;
-
-  console.log(usuario_id);
-  console.log(mensagem_id);
-  console.log(titulo_conversa);
-  console.log(tipo_conversa);
-  console.log(id);
 
   if (!usuario_id && !mensagem_id && !titulo_conversa && !tipo_conversa) {
     return res
@@ -506,6 +535,44 @@ app.post("/mensagens", async (req, res) => {
   } catch (error) {
     console.error("Erro ao armazenar a mensagem:", error);
     res.status(500).json({ error: "Erro ao armazenar a mensagem:" });
+  }
+});
+
+//deletar uma mensagem
+app.delete("/mensagens/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = 'DELETE FROM "mensagens" WHERE id = $1 RETURNING ';
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Mensagem não encontrada" });
+    }
+
+    res.status(200).json({ message: "Mensagem excluída com sucesso" });
+  } catch (error) {
+    console.error("Erro ao excluir mensagem:", error);
+    res.status(500).json({ error: "Erro ao excluir mensagem" });
+  }
+});
+
+//consultar uma conversa
+app.get("/mensagens/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = 'SELECT FROM "mensagens" WHERE id = $1';
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Mensagem não encontrada" });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erro ao consultar mensagem:", error);
+    res.status(500).json({ error: "Erro ao consultar mensagem" });
   }
 });
 
