@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
     "concurrently": "^9.0.1",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",

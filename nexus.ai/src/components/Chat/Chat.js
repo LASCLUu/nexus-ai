@@ -3,7 +3,7 @@ import "./chat.css";
 import { useContextSelector } from "use-context-selector";
 import { AppContext } from "../../contexts/AppContext";
 
-const Chat = ({ messageGemini, tituloGemini }) => {
+const Chat = ({ messageGemini, tituloGemini, atualizarConversa }) => {
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([
     { text: "Olá! Como Nexus pode te ajudar hoje?", sender: "bot" },
@@ -27,14 +27,17 @@ const Chat = ({ messageGemini, tituloGemini }) => {
         setInputMessage("");
 
         if (conversa.titulo_conversa === "") {
-          const titulo = await tituloGemini();
-          if(titulo === "Não"){
-            return
-          }else{
-            
+          const titulo = await tituloGemini(inputMessage);
+
+          if (titulo === "Não") {
+            console.log("A IA determinou que não é possível gerar um título.");
+          } else {
+            const dados = { titulo_conversa: titulo };
+            await atualizarConversa(conversa.id, dados);
+            console.log("Conversa atualizada com sucesso.");
           }
         } else {
-
+          console.log("Conversa já possui um título. Nenhuma ação necessária.");
         }
 
         const response = await messageGemini(inputMessage);

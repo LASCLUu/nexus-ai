@@ -1,17 +1,21 @@
 import React from "react";
+import PlusIcon from "bootstrap-icons/icons/plus.svg";
+import "./sidebar.css";
 
-const Sidebar = () => {
+const Sidebar = ({ criarConversa }) => {
   return (
-    <div
-      className=""
-      id="sidebar"
-    >
-      <a
-        href="/"
-        className="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom"
-      >
-        <span className="fs-5 fw-semibold">Conversas</span>
-      </a>
+    <div className="" id="sidebar">
+      <div className="menuSidebar d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+        <a
+          href="/"
+          className="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom"
+        >
+          <span className="fs-5 fw-semibold">Conversas</span>
+        </a>
+        <button className="btn btn-outline-primary" onClick={criarConversa}>
+          <img src={PlusIcon} alt="Adicionar" />
+        </button>
+      </div>
       <div
         className="list-group list-group-flush border-bottom scrollarea"
         style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
