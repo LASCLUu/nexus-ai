@@ -353,6 +353,8 @@ const PaginaPrincipal = () => {
           selectedRow={selectedRow}
           selectedConversa={selectedConversa}
           deleteRow={deleteRow}
+          showSidebar={showSidebar}
+          setShowSidebar={setShowSidebar}
         />
         <div className="chat-container">
           <Chat

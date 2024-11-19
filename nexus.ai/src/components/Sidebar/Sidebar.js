@@ -9,6 +9,8 @@ const Sidebar = ({
   selectedConversa,
   selectedRow,
   deleteRow,
+  showSidebar,
+  setShowSidebar,
 }) => {
   const listaConversas = useContextSelector(
     AppContext,
@@ -16,7 +18,10 @@ const Sidebar = ({
   );
 
   return (
-    <div className="" id="sidebar">
+    <div
+      id="sidebar"
+      className={`sidebar ${showSidebar ? "d-block" : "d-none"}`}
+    >
       <div className="menuSidebar d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
         <a
           href="/"
@@ -46,7 +51,7 @@ const Sidebar = ({
               aria-current={
                 selectedConversa === conversa.id ? "true" : undefined
               }
-              onClick={() => selectedRow(conversa)} // Chama a função ao clicar na conversa
+              onClick={() => selectedRow(conversa)}
             >
               <div className="d-flex w-100 align-items-center justify-content-between">
                 <strong className="mb-1">{conversa.id}</strong>
@@ -60,7 +65,7 @@ const Sidebar = ({
                     deleteRow(conversa.id);
                   }}
                 >
-                  <span aria-hidden="true">&times;</span> {/* Ícone de "X" */}
+                  <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div className="col-10 mb-1 small">
