@@ -19,11 +19,16 @@ const Sidebar = ({ handleCreateConversa, selectedConversa, selectedRow }) => {
         >
           <span className="fs-5 fw-semibold">Conversas</span>
         </a>
+<<<<<<< HEAD
         <button
           className="btn btn-outline-primary"
           onClick={handleCreateConversa}
         >
           <img src={PlusIcon} alt="Adicionar" />
+=======
+        <button className="btn btn-outline-primary" onClick={criarConversa}>
+          <img src={PlusIcon} alt="Adicionar" id="newChatButton"/>
+>>>>>>> 0ced3323ea146d5c171d6d233a9debd0741e1b6e
         </button>
       </div>
       <div
