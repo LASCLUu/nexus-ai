@@ -10,9 +10,11 @@ import {
   atualizarConversa,
   criarMensagens,
   criarConversa,
+  buscarMensagens,
 } from "../../services/api";
 import { useContextSelector } from "use-context-selector";
-import { AppContext, useAppContext } from "../../contexts/AppContext";
+import { AppContext } from "../../contexts/AppContext";
+import { useContext } from "react";
 
 const PaginaPrincipal = () => {
   const [showSidebar, setShowSidebar] = useState(true);
@@ -29,70 +31,132 @@ const PaginaPrincipal = () => {
     (context) => context.conversa
   );
 
-  const { updateConversa } = useAppContext();
+  const { setConversa, setMensagens, carregarConversas } = useContextSelector(
+    AppContext,
+    (context) => context
+  );
 
   const handleSendMessage = async () => {
-    if (inputMessage.trim()) {
+    if (!selectedConversa) {
       try {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: inputMessage, sender: "user" },
-        ]);
-        setInputMessage("");
+        const novaConversa = await createConversa(); // Cria a conversa
+        setConversa(novaConversa); // Atualiza o estado da conversa
+        setSelectedConversa(novaConversa.id); // Marca a conversa como selecionada
 
-        if (conversa.titulo_conversa === "") {
-          const titulo = await tituloGemini(inputMessage);
+        if (inputMessage.trim()) {
+          // Agora que a conversa foi criada, cria a mensagem do usuário
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: inputMessage, sender: "user" },
+          ]);
+          setInputMessage(""); // Limpa o campo de entrada
 
-          if (titulo === "Não") {
-            console.log("A IA determinou que não é possível gerar um título.");
+          // Criação da mensagem no banco de dados
+          await criarMensagens(inputMessage, profile.id, novaConversa.id); // Enviado pelo usuário
+
+          // Envia a mensagem para o bot e atualiza a interface
+          const response = await messageGemini(inputMessage);
+          const respostaLimpa = response.completion.replace(
+            /\*\*(.*?)\*\*/g,
+            "$1"
+          ); // Remove o negrito (**) das palavras
+
+          if (response.error) {
+            // Se houver erro na resposta do bot, cria uma mensagem de erro
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { text: response.error, sender: "bot" },
+            ]);
+            // Cria a mensagem de erro no banco de dados
+            await criarMensagens(response.error, 1, novaConversa.id); // Enviado pelo Nexus (bot)
           } else {
-            const dados = { titulo_conversa: titulo };
-            await atualizarConversa(conversa.id, dados);
-            console.log("Conversa atualizada com sucesso.");
+            // Se a resposta do bot for bem-sucedida, exibe a resposta na interface
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { text: respostaLimpa, sender: "bot" },
+            ]);
+            // Cria a mensagem do bot no banco de dados
+            await criarMensagens(response.completion, 1, novaConversa.id); // Enviado pelo Nexus (bot)
           }
-        } else {
-          console.log("Conversa já possui um título. Nenhuma ação necessária.");
-        }
-
-        const response = await messageGemini(inputMessage);
-        if (response.error) {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: response.error, sender: "bot" },
-          ]);
-        } else {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: response.completion, sender: "bot" },
-          ]);
         }
       } catch (error) {
-        console.error("Erro ao enviar consulta:", error);
+        console.error("Erro ao criar a conversa:", error);
+      }
+    } else {
+      if (inputMessage.trim()) {
+        try {
+          // Criação da mensagem do usuário
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: inputMessage, sender: "user" }, // Correção: "usuario" ao invés de "user"
+          ]);
+          setInputMessage(""); // Limpa o campo de entrada
+
+          // Criação da mensagem no banco de dados
+          await criarMensagens(inputMessage, profile.id, conversa.id); // Enviado pelo usuário
+
+          // Envia a mensagem para o bot e atualiza a interface
+          const response = await messageGemini(inputMessage);
+          const respostaLimpa = response.completion.replace(
+            /\*\*(.*?)\*\*/g,
+            "$1"
+          ); // Remove o negrito (**) das palavras
+
+          if (response.error) {
+            // Se houver erro na resposta do bot, cria uma mensagem de erro
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { text: response.error, sender: "bot" },
+            ]);
+            // Cria a mensagem de erro no banco de dados
+            await criarMensagens(response.error, 1, conversa.id); // Enviado pelo Nexus (bot)
+          } else {
+            // Se a resposta do bot for bem-sucedida, exibe a resposta na interface
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { text: respostaLimpa, sender: "bot" },
+            ]);
+            // Cria a mensagem do bot no banco de dados
+            await criarMensagens(response.completion, 1, conversa.id); // Enviado pelo Nexus (bot)
+          }
+        } catch (error) {
+          console.error("Erro ao enviar consulta:", error);
+        }
       }
     }
   };
 
   const createConversa = async () => {
     try {
+      // Limpa as mensagens anteriores antes de criar a nova conversa
+      setMessages([
+        { text: "Olá! Como Nexus pode te ajudar hoje?", sender: "bot" },
+      ]);
+
       const text = "Olá! Como Nexus pode te ajudar hoje?";
-      const enviado_por = 1;
-      setMessages({
+      const enviado_por = 1; // ID do Nexus
+      const usuario_id = profile.id; // ID do usuário atual
+
+      // Criação da conversa
+      const conversaCriada = await criarConversa(usuario_id);
+
+      await carregarConversas();
+
+      // Criação da mensagem associada à conversa
+      const mensagemCriada = await criarMensagens(
         text,
-        sender: enviado_por,
-      });
+        enviado_por,
+        conversaCriada.id // conversa_id
+      );
 
-      const usuario_id = profile.id;
+      const mensagem_id = mensagemCriada.id; // ID da mensagem criada
 
-      const mensagemCriada = await criarMensagens(text, enviado_por);
-      const mensagem_id = mensagemCriada.id;
-
-      const dados = { usuario_id, mensagem_id };
-      const conversaCriada = await criarConversa(dados);
-
-      updateConversa({
+      setSelectedConversa(conversaCriada.id);
+      // Atualização do estado da conversa
+      setConversa({
         id: conversaCriada.id,
         usuario_id: conversaCriada.usuario_id,
-        mensagem_id: conversaCriada.mensagem_id,
+        mensagem_id, // ID da mensagem inicial
         titulo_conversa: conversaCriada.titulo_conversa || "",
         tipo_conversa: conversaCriada.tipo_conversa || "",
         data_log: conversaCriada.data_log,
@@ -104,21 +168,33 @@ const PaginaPrincipal = () => {
     }
   };
 
-  const selectedRow = (conversa) => {
-    setSelectedConversa(conversa.id);
-    updateConversa({
-      id: conversa.id,
-      usuario_id: conversa.usuario_id,
-      mensagem_id: conversa.mensagem_id,
-      titulo_conversa: conversa.titulo_conversa || "Nova Conversa",
-      tipo_conversa: conversa.tipo_conversa || "Suporte",
-      data_log: conversa.data_log,
-    });
+  const selectedRow = async (conversa) => {
+    try {
+      setSelectedConversa(conversa.id);
+      setConversa({
+        id: conversa.id,
+        usuario_id: conversa.usuario_id,
+        mensagem_id: conversa.mensagem_id,
+        titulo_conversa: conversa.titulo_conversa || "",
+        tipo_conversa: conversa.tipo_conversa || "",
+        data_log: conversa.data_log,
+      });
 
-    console.log(`Conversa ${conversa.titulo_conversa} selecionada.`);
+      // Busca as mensagens da conversa selecionada
+      const mensagens = await buscarMensagens(conversa.id);
+
+      setMensagens(mensagens);
+
+      const formattedMessages = mensagens.map((msg) => ({
+        text: msg.mensagem,
+        sender: msg.enviado_por === 1 ? "bot" : "user",
+      }));
+
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error("Erro ao selecionar a conversa:", error);
+    }
   };
-
-  useEffect(() => {}, [messages]);
 
   return (
     <div className="page-container">

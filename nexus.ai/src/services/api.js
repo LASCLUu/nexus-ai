@@ -11,6 +11,8 @@ const ENDPOINTS = {
   criarMensagem: "/mensagens",
   deletarConversa: "/conversa/:id",
   listarConversas: "/conversas/:usuario_id",
+  buscarMensagens: "/mensagens/conversa",
+  atualizarConversa: "/conversa/:id",
 };
 
 export const api = axios.create({
@@ -34,32 +36,35 @@ export const messageGemini = async (message) => {
   }
 };
 
-export const tituloGemini = async (message) => {
-  try {
-    const response = await api.get(ENDPOINTS.tituloConversa, {
-      params: {
-        prompt: message,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return response.data;
-  } catch (err) {
-    console.log("Erro o titulo para Gemini: ", err);
-  }
-};
+// export const tituloGemini = async (message) => {
+//   try {
+//     console.log("Enviando para Gemini:", message); // Log do prompt enviado
+//     const response = await api.get(ENDPOINTS.tituloConversa, {
+//       params: {
+//         prompt: message,
+//       },
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     });
+//     console.log("Resposta de Gemini:", response.data);
+//     return response.data;
+//   } catch (err) {
+//     console.error("Erro ao interagir com Gemini:", err);
+//     throw err;
+//   }
+// };
 
 export const atualizarConversa = async (id, dados) => {
   try {
     const url = ENDPOINTS.atualizarConversa.replace(":id", id);
     const response = await api.put(url, {
-      params: { dados },
+      ...dados, // Passando os dados diretamente, sem o uso de 'params'
       headers: {
         "Content-Type": "application/json",
       },
     });
-    return response.data; // Retorna os dados da resposta, se necessário
+    return response.data;
   } catch (err) {
     console.error("Erro ao atualizar a conversa: ", err);
     throw err; // Lança o erro para ser tratado em outro lugar, se necessário
@@ -82,13 +87,17 @@ export const buscarUser = async (id) => {
   }
 };
 
-export const criarConversa = async (dados) => {
+export const criarConversa = async (usuario_id) => {
   try {
-    const response = await api.post(ENDPOINTS.criarConversa, dados, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await api.post(
+      ENDPOINTS.criarConversa,
+      { usuario_id }, // Enviando como objeto
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (err) {
     console.error("Erro ao criar a conversa: ", err);
@@ -128,13 +137,14 @@ export const listarConversas = async (usuario_id) => {
   }
 };
 
-export const criarMensagens = async (mensagem, enviado_por) => {
+export const criarMensagens = async (mensagem, enviado_por, conversa_id) => {
   try {
     const response = await api.post(
       ENDPOINTS.criarMensagem,
       {
         mensagem,
         enviado_por,
+        conversa_id,
       },
       {
         headers: {
@@ -145,6 +155,21 @@ export const criarMensagens = async (mensagem, enviado_por) => {
     return response.data; // Retorna os dados da nova mensagem
   } catch (err) {
     console.error("Erro ao criar a mensagem: ", err);
+    throw err;
+  }
+};
+
+export const buscarMensagens = async (conversa_id) => {
+  try {
+    const response = await api.get(ENDPOINTS.buscarMensagens, {
+      params: { conversa_id }, // Envia o `conversa_id` como query string
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // Retorna os dados das mensagens
+  } catch (err) {
+    console.error("Erro ao buscar mensagens: ", err);
     throw err;
   }
 };

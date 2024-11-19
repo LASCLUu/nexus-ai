@@ -130,26 +130,32 @@ app.get("/api/titulo-gemini", async (req, res) => {
       model: "gemini-1.5-flash",
     });
 
-    // Primeira chamada: verificar se é uma pergunta escolar
+    // Primeira chamada: verificar se o prompt é adequado para ser título
     const classificationPrompt = `
-Essa pergunta pode ser levada em consideração para ser usada como titulo da conversa? Responda com o "Titulo da Conversa" ou "Não". Pergunta: ${prompt}
+Essa pergunta pode ser levada em consideração para ser usada como título da conversa? Responda com "Titulo da Conversa"(Limite de 100 caracteres) ou "Não". Pergunta: ${prompt}
 `;
 
     const classificationResult = await model.generateContent(
       classificationPrompt
     );
+    const label = classificationResult.response.text().toLowerCase().trim();
 
-    const label = classificationResult.response.text().toLowerCase();
-    const palavras = ["Não"];
-    const contemAlgumaPalavra = palavras.some((palavra) =>
-      label.includes(palavra)
-    );
+    if (label.includes("não")) {
+      return res.json({
+        completion: "Não",
+        classification: "Não é um título válido.",
+      });
+    }
 
+    // Segunda chamada: gerar o título, se necessário
     const result = await model.generateContent(prompt);
-    res.json({ completion: result.response.text(), classification: label });
+    const titulo = result.response.text().trim();
+
+    // Retorna o título gerado junto com a classificação
+    res.json({ completion: titulo, classification: label });
   } catch (error) {
     console.error("Erro ao interagir com o modelo:", error);
-    res.status(500).send({ error: "Erro ao gerar conteúdo." });
+    res.status(500).json({ error: "Erro ao gerar conteúdo." });
   }
 });
 
@@ -431,24 +437,33 @@ app.delete("/usuario/:id", async (req, res) => {
 
 //criar uma conversa com o usuario
 app.post("/conversa", async (req, res) => {
-  const { usuario_id, mensagem_id } = req.body;
+  const { usuario_id } = req.body;
 
-  if (!usuario_id || !mensagem_id) {
+  if (!usuario_id) {
     return res.status(400).json({
-      error: "Usuário e mensagem são obrigatórios",
+      error: "Usuário é obrigatório",
     });
   }
 
   try {
-    const query =
-      'INSERT INTO "conversa" (usuario_id, mensagem_id) VALUES ($1, $2) RETURNING *';
+    // Criação com valores padrão explícitos (opcional)
+    const titulo_conversa = ""; // Valor padrão
+    const tipo_conversa = ""; // Valor padrão
 
-    const result = await pool.query(query, [usuario_id, mensagem_id]);
+    const query = `
+      INSERT INTO "conversa" (usuario_id, titulo_conversa, tipo_conversa) 
+      VALUES ($1, $2, $3) 
+      RETURNING *`;
+    const result = await pool.query(query, [
+      usuario_id,
+      titulo_conversa,
+      tipo_conversa,
+    ]);
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error("Erro ao estabelecer a conversa:", error);
-    res.status(500).json({ error: "Erro ao estabelecer a conversa" });
+    console.error("Erro ao criar conversa:", error);
+    res.status(500).json({ error: "Erro ao criar a conversa" });
   }
 });
 
@@ -485,7 +500,7 @@ app.get("/conversas/:usuario_id", async (req, res) => {
         .json({ error: "Nenhuma conversa encontrada para este usuário." });
     }
 
-    res.status(200).json(result.rows); // Retorna todas as conversas encontradas
+    res.status(200).json(result.rows);
   } catch (error) {
     console.error("Erro ao consultar conversas:", error);
     res.status(500).json({ error: "Erro ao consultar conversas." });
@@ -494,10 +509,10 @@ app.get("/conversas/:usuario_id", async (req, res) => {
 
 //atualizar conversas
 app.put("/conversa/:id", async (req, res) => {
-  const { id, usuario_id, mensagem_id, titulo_conversa, tipo_conversa } =
-    req.body;
+  const { usuario_id, titulo_conversa, tipo_conversa } = req.body;
+  const { id } = req.params;
 
-  if (!usuario_id && !mensagem_id && !titulo_conversa && !tipo_conversa) {
+  if (!usuario_id && !titulo_conversa && !tipo_conversa) {
     return res
       .status(400)
       .json({ error: "Informe pelo menos um campo para atualizar" });
@@ -506,13 +521,14 @@ app.put("/conversa/:id", async (req, res) => {
   try {
     const query = `
       UPDATE "conversa" 
-      SET usuario_id = COALESCE($1, usuario_id), mensagem_id = COALESCE($2, mensagem_id), 
-      titulo_conversa = COALESCE($3, titulo_conversa), tipo_conversa = COALESCE($4, tipo_conversa)
-      WHERE id = $5
+      SET 
+        usuario_id = COALESCE($1, usuario_id), 
+        titulo_conversa = COALESCE($2, titulo_conversa), 
+        tipo_conversa = COALESCE($3, tipo_conversa)
+      WHERE id = $4
       RETURNING *`;
     const result = await pool.query(query, [
       usuario_id,
-      mensagem_id,
       titulo_conversa,
       tipo_conversa,
       id,
@@ -533,23 +549,30 @@ app.put("/conversa/:id", async (req, res) => {
 
 //armazenar uma mensagem com o usuario
 app.post("/mensagens", async (req, res) => {
-  const { mensagem, enviado_por } = req.body;
+  const { mensagem, enviado_por, conversa_id } = req.body;
 
-  if (!mensagem || !enviado_por) {
-    return res
-      .status(400)
-      .json({ error: "A mensagem e quem enviou a mensagem são obrigatorios" });
+  if (!mensagem || !enviado_por || !conversa_id) {
+    return res.status(400).json({
+      error:
+        "A mensagem, quem enviou a mensagem e o ID da conversa são obrigatórios",
+    });
   }
 
   try {
-    const query =
-      'INSERT INTO "mensagens" (mensagem, enviado_por) VALUES ($1, $2) RETURNING *';
-    const result = await pool.query(query, [mensagem, enviado_por]);
+    const query = `
+      INSERT INTO "mensagens" (mensagem, enviado_por, conversa_id) 
+      VALUES ($1, $2, $3) 
+      RETURNING *`;
+    const result = await pool.query(query, [
+      mensagem,
+      enviado_por,
+      conversa_id,
+    ]);
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("Erro ao armazenar a mensagem:", error);
-    res.status(500).json({ error: "Erro ao armazenar a mensagem:" });
+    res.status(500).json({ error: "Erro ao armazenar a mensagem" });
   }
 });
 
@@ -558,7 +581,7 @@ app.delete("/mensagens/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const query = 'DELETE FROM "mensagens" WHERE id = $1 RETURNING ';
+    const query = 'DELETE FROM "mensagens" WHERE id = $1 RETURNING *';
     const result = await pool.query(query, [id]);
 
     if (result.rowCount === 0) {
@@ -572,12 +595,41 @@ app.delete("/mensagens/:id", async (req, res) => {
   }
 });
 
+app.get("/mensagens/conversa", async (req, res) => {
+  const { conversa_id } = req.query;
+
+  if (!conversa_id) {
+    return res.status(400).json({ error: "O ID da conversa é obrigatório." });
+  }
+
+  try {
+    const query = `
+      SELECT * 
+      FROM mensagens 
+      WHERE conversa_id = $1 
+      ORDER BY data_envio ASC
+    `;
+    const result = await pool.query(query, [conversa_id]);
+
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Nenhuma mensagem encontrada para esta conversa." });
+    }
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Erro ao buscar mensagens:", error);
+    res.status(500).json({ error: "Erro ao buscar mensagens." });
+  }
+});
+
 //consultar uma conversa
 app.get("/mensagens/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const query = 'SELECT FROM "mensagens" WHERE id = $1';
+    const query = 'SELECT * FROM "mensagens" WHERE id = $1';
     const result = await pool.query(query, [id]);
 
     if (result.rowCount === 0) {

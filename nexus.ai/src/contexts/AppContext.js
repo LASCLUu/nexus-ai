@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { buscarUser, listarConversas } from "../services/api";
+import { buscarUser, listarConversas, buscarMensagens } from "../services/api";
 import { createContext } from "use-context-selector";
 import { useNavigate } from "react-router-dom";
 
@@ -23,14 +23,11 @@ export const AppContext = createContext({
   conversa: {
     id: "",
     usuario_id: "",
-    mensagem_id: "",
     titulo_conversa: "",
     tipo_conversa: "",
     data_log: "",
   },
 });
-
-export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = (props) => {
   const { children, userId } = props;
@@ -45,7 +42,6 @@ export const AppProvider = (props) => {
   const [conversa, setConversa] = useState({
     id: "",
     usuario_id: "",
-    mensagem_id: "",
     titulo_conversa: "",
     tipo_conversa: "",
     data_log: "",
@@ -59,6 +55,8 @@ export const AppProvider = (props) => {
   });
   const [signed, setSigned] = useState(false); // Inicializando o estado signed
   const [loading, setLoading] = useState(true); // Estado de carregamento
+
+  const [mensagens, setMensagens] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,8 +66,7 @@ export const AppProvider = (props) => {
           const userData = await buscarUser(userId);
           setProfile(userData);
           setSigned(true);
-          const conversaData = await listarConversas(userId);
-          setConversas(conversaData);
+          await carregarConversas(userId);
         } else {
           console.log("não tem usuario");
         }
@@ -82,8 +79,14 @@ export const AppProvider = (props) => {
     initializeUser();
   }, [userId, navigate]);
 
-  const updateConversa = (newConversa) => {
-    setConversa(newConversa);
+  const carregarConversas = async () => {
+    try {
+      const conversaData = await listarConversas(userId);
+      setConversas(conversaData);
+      return conversaData;
+    } catch (err) {
+      console.error("Erro ao carregar conversas:", err);
+    }
   };
 
   if (loading) {
@@ -97,12 +100,17 @@ export const AppProvider = (props) => {
         profile,
         conversas,
         conversa,
-        updateConversa,
         logs,
         bot,
+        setConversa,
+        mensagens,
+        setMensagens,
+        carregarConversas,
       }}
     >
       {children}
     </AppContext.Provider>
   );
 };
+
+export const useAppContext = () => useContext(AppContext);
