@@ -12,6 +12,12 @@ const Chat = ({
   const bot = useContextSelector(AppContext, (context) => context.bot);
   const profile = useContextSelector(AppContext, (context) => context.profile);
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && inputMessage.trim() !== "") {
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="chat-container chat-box">
       <div className="chat-header">
@@ -62,6 +68,7 @@ const Chat = ({
           type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Digite sua mensagem..."
         />
         <button onClick={handleSendMessage}>Enviar</button>

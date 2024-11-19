@@ -23,9 +23,7 @@ export const api = axios.create({
 export const messageGemini = async (message) => {
   try {
     const response = await api.get(ENDPOINTS.gemini, {
-      params: {
-        prompt: message,
-      },
+      params: { prompt: message },
       headers: {
         "Content-Type": "application/json",
       },

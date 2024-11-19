@@ -82,7 +82,6 @@ const PaginaPrincipal = () => {
               }),
             },
           ]);
-          setInputMessage(""); // Limpa o campo de entrada
 
           // Criação da mensagem no banco de dados
           const mensagem = await criarMensagens(
@@ -103,6 +102,9 @@ const PaginaPrincipal = () => {
             "Enviou messagem ao Gemini",
             `Nova mensagem foi enviada para o Gemini ID: ${response.id}`
           );
+
+          setInputMessage(""); // Limpa o campo de entrada
+
           const respostaLimpa = response.completion
             ? response.completion.replace(/\*\*(.*?)\*\*/g, "$1")
             : ""; // Retorna uma string vazia caso response.completion seja undefined

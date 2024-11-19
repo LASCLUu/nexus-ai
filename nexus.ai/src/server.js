@@ -78,10 +78,11 @@ app.get("/api/consultar-gemini", async (req, res) => {
     // Primeira chamada: verificar se é uma pergunta escolar
     const classificationPrompt = `
 Você vai classificar uma pergunta em três categorias: "Matéria Escolar", "Cumprimento" e "Outro".
-- Perguntas sobre matérias escolares incluem perguntas sobre disciplinas como Matemática, Português, História, etc, podem ser considerados como "Matéria Escolar".
-- Cumprimentos, saudações e despedidas que são considerados também como "Cumprimento".
-- "Outro" inclui qualquer pergunta que não seja sobre uma matéria escolar. 
-Classifique a seguinte pergunta como "Matéria Escolar", "Cumprimento" e "Outro". Pergunta: ${prompt}
+- "Matéria Escolar" inclui perguntas sobre disciplinas como Matemática, Português, História, Ciência, Geografia, entre outras, bem como curiosidades relacionadas a esses temas.
+- "Cumprimento" inclui saudações, despedidas e expressões como "Olá", "Oi", "Até logo", etc.
+- "Outro" abrange qualquer pergunta ou mensagem que não esteja relacionada a matérias escolares ou curiosidades acadêmicas.
+
+Classifique a seguinte pergunta como "Matéria Escolar", "Cumprimento" ou "Outro". Pergunta: ${prompt}
 `;
 
     const classificationResult = await model.generateContent(
@@ -486,6 +487,7 @@ app.delete("/conversa/:id", async (req, res) => {
   }
 });
 
+
 // Listar todas as conversas por usuario_id
 app.get("/conversas/:usuario_id", async (req, res) => {
   const { usuario_id } = req.params;
@@ -494,12 +496,12 @@ app.get("/conversas/:usuario_id", async (req, res) => {
     const query = 'SELECT * FROM "conversa" WHERE usuario_id = $1';
     const result = await pool.query(query, [usuario_id]);
 
+    // Retorna um array vazio se não houver conversas
     if (result.rowCount === 0) {
-      return res
-        .status(404)
-        .json({ error: "Nenhuma conversa encontrada para este usuário." });
+      return res.status(200).json([]);
     }
 
+    // Retorna as conversas encontradas
     res.status(200).json(result.rows);
   } catch (error) {
     console.error("Erro ao consultar conversas:", error);

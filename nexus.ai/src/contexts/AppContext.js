@@ -78,6 +78,7 @@ export const AppProvider = (props) => {
     };
     initializeUser();
   }, [userId, navigate]);
+  
 
   const carregarConversas = async () => {
     try {
