@@ -13,7 +13,7 @@ const Sidebar = ({ criarConversa }) => {
           <span className="fs-5 fw-semibold">Conversas</span>
         </a>
         <button className="btn btn-outline-primary" onClick={criarConversa}>
-          <img src={PlusIcon} alt="Adicionar" />
+          <img src={PlusIcon} alt="Adicionar" id="newChatButton"/>
         </button>
       </div>
       <div
