@@ -13,6 +13,7 @@ const ENDPOINTS = {
   listarConversas: "/conversas/:usuario_id",
   buscarMensagens: "/mensagens/conversa",
   atualizarConversa: "/conversa/:id",
+  criarLog: "/log",
 };
 
 export const api = axios.create({
@@ -108,8 +109,8 @@ export const criarConversa = async (usuario_id) => {
 export const deletarConversa = async (id) => {
   try {
     const url = ENDPOINTS.deletarConversa.replace(":id", id);
-    const response = await api.get(url, {
-      params: { id },
+    const response = await api.delete(url, {
+      id,
       headers: {
         "Content-Type": "application/json",
       },
@@ -170,6 +171,28 @@ export const buscarMensagens = async (conversa_id) => {
     return response.data; // Retorna os dados das mensagens
   } catch (err) {
     console.error("Erro ao buscar mensagens: ", err);
+    throw err;
+  }
+};
+
+export const criarLog = async (usuario_id, tipo_log, descricao) => {
+  try {
+    const response = await api.post(
+      ENDPOINTS.criarLog,
+      {
+        usuario_id,
+        tipo_log,
+        descricao,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // Retorna os dados da nova mensagem
+  } catch (err) {
+    console.error("Erro ao criar a mensagem: ", err);
     throw err;
   }
 };

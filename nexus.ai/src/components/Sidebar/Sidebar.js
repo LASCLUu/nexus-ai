@@ -4,7 +4,12 @@ import "./sidebar.css";
 import { useContextSelector } from "use-context-selector";
 import { AppContext, useAppContext } from "../../contexts/AppContext";
 
-const Sidebar = ({ handleCreateConversa, selectedConversa, selectedRow }) => {
+const Sidebar = ({
+  handleCreateConversa,
+  selectedConversa,
+  selectedRow,
+  deleteRow,
+}) => {
   const listaConversas = useContextSelector(
     AppContext,
     (context) => context.conversas
@@ -48,6 +53,15 @@ const Sidebar = ({ handleCreateConversa, selectedConversa, selectedRow }) => {
                 <small>
                   {new Date(conversa.data_log).toLocaleDateString("pt-BR")}
                 </small>
+                <button
+                  className="btn btn-sm btn-danger ml-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteRow(conversa.id);
+                  }}
+                >
+                  <span aria-hidden="true">&times;</span> {/* Ícone de "X" */}
+                </button>
               </div>
               <div className="col-10 mb-1 small">
                 {conversa.mensagem_resumo}

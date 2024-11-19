@@ -11,6 +11,8 @@ import {
   criarMensagens,
   criarConversa,
   buscarMensagens,
+  deletarConversa,
+  criarLog,
 } from "../../services/api";
 import { useContextSelector } from "use-context-selector";
 import { AppContext } from "../../contexts/AppContext";
@@ -20,7 +22,14 @@ const PaginaPrincipal = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([
-    { text: "Olá! Como Nexus pode te ajudar hoje?", sender: "bot" },
+    {
+      text: "Olá! Como Nexus pode te ajudar hoje?",
+      sender: "bot",
+      time: new Date().toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    },
   ]);
   const [selectedConversa, setSelectedConversa] = useState(null);
 
@@ -36,10 +45,27 @@ const PaginaPrincipal = () => {
     (context) => context
   );
 
+  const deleteRow = async (id) => {
+    try {
+      await deletarConversa(id);
+
+      criarLog(
+        profile.id,
+        "Deletado conversa",
+        `Deletado a conversa com o ID: ${id}`
+      );
+      await carregarConversas();
+      console.log(`Conversa ${id} deletada com sucesso!`);
+    } catch (err) {
+      console.error("Erro ao deletar conversa:", err);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!selectedConversa) {
       try {
         const novaConversa = await createConversa(); // Cria a conversa
+
         setConversa(novaConversa); // Atualiza o estado da conversa
         setSelectedConversa(novaConversa.id); // Marca a conversa como selecionada
 
@@ -47,36 +73,89 @@ const PaginaPrincipal = () => {
           // Agora que a conversa foi criada, cria a mensagem do usuário
           setMessages((prevMessages) => [
             ...prevMessages,
-            { text: inputMessage, sender: "user" },
+            {
+              text: inputMessage,
+              sender: "user",
+              time: new Date().toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            },
           ]);
           setInputMessage(""); // Limpa o campo de entrada
 
           // Criação da mensagem no banco de dados
-          await criarMensagens(inputMessage, profile.id, novaConversa.id); // Enviado pelo usuário
+          const mensagem = await criarMensagens(
+            inputMessage,
+            profile.id,
+            novaConversa.id
+          ); // Enviado pelo usuário
+          criarLog(
+            profile.id,
+            "Enviou messagem ao BD",
+            `Nova mensagem foi enviada para o BD ID: ${mensagem.id}`
+          );
 
           // Envia a mensagem para o bot e atualiza a interface
           const response = await messageGemini(inputMessage);
-          const respostaLimpa = response.completion.replace(
-            /\*\*(.*?)\*\*/g,
-            "$1"
-          ); // Remove o negrito (**) das palavras
+          criarLog(
+            profile.id,
+            "Enviou messagem ao Gemini",
+            `Nova mensagem foi enviada para o Gemini ID: ${response.id}`
+          );
+          const respostaLimpa = response.completion
+            ? response.completion.replace(/\*\*(.*?)\*\*/g, "$1")
+            : ""; // Retorna uma string vazia caso response.completion seja undefined
 
           if (response.error) {
             // Se houver erro na resposta do bot, cria uma mensagem de erro
             setMessages((prevMessages) => [
               ...prevMessages,
-              { text: response.error, sender: "bot" },
+              {
+                text: response.error,
+                sender: "bot",
+                time: new Date().toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              },
             ]);
             // Cria a mensagem de erro no banco de dados
-            await criarMensagens(response.error, 1, novaConversa.id); // Enviado pelo Nexus (bot)
+            const erro = await criarMensagens(
+              response.error,
+              1,
+              novaConversa.id
+            ); // Enviado pelo Nexus (bot)
+
+            criarLog(
+              profile.id,
+              "Erro Gemini",
+              `Erro ao se comunicar com Gemini ID: ${erro.id}`
+            );
           } else {
             // Se a resposta do bot for bem-sucedida, exibe a resposta na interface
             setMessages((prevMessages) => [
               ...prevMessages,
-              { text: respostaLimpa, sender: "bot" },
+              {
+                text: respostaLimpa,
+                sender: "bot",
+                time: new Date().toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              },
             ]);
             // Cria a mensagem do bot no banco de dados
-            await criarMensagens(response.completion, 1, novaConversa.id); // Enviado pelo Nexus (bot)
+            const mensagem = await criarMensagens(
+              response.completion,
+              1,
+              novaConversa.id
+            ); // Enviado pelo Nexus (bot)
+            criarLog(
+              profile.id,
+              "Mensagem Gemini",
+              `Mensagem Recebida do Gemini ID: ${mensagem.id}`
+            );
           }
         }
       } catch (error) {
@@ -88,7 +167,14 @@ const PaginaPrincipal = () => {
           // Criação da mensagem do usuário
           setMessages((prevMessages) => [
             ...prevMessages,
-            { text: inputMessage, sender: "user" }, // Correção: "usuario" ao invés de "user"
+            {
+              text: inputMessage,
+              sender: "user",
+              time: new Date().toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            }, // Correção: "usuario" ao invés de "user"
           ]);
           setInputMessage(""); // Limpa o campo de entrada
 
@@ -106,18 +192,47 @@ const PaginaPrincipal = () => {
             // Se houver erro na resposta do bot, cria uma mensagem de erro
             setMessages((prevMessages) => [
               ...prevMessages,
-              { text: response.error, sender: "bot" },
+              {
+                text: response.error,
+                sender: "bot",
+                time: new Date().toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              },
             ]);
             // Cria a mensagem de erro no banco de dados
-            await criarMensagens(response.error, 1, conversa.id); // Enviado pelo Nexus (bot)
+            const erro = await criarMensagens(response.error, 1, conversa.id); // Enviado pelo Nexus (bot)
+            criarLog(
+              profile.id,
+              "Erro Gemini",
+              `Erro ao se comunicar com Gemini ID: ${erro.id}`
+            );
           } else {
             // Se a resposta do bot for bem-sucedida, exibe a resposta na interface
             setMessages((prevMessages) => [
               ...prevMessages,
-              { text: respostaLimpa, sender: "bot" },
+              {
+                text: respostaLimpa,
+                sender: "bot",
+                time: new Date().toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+              },
             ]);
             // Cria a mensagem do bot no banco de dados
-            await criarMensagens(response.completion, 1, conversa.id); // Enviado pelo Nexus (bot)
+            const mensagem = await criarMensagens(
+              response.completion,
+              1,
+              conversa.id
+            ); // Enviado pelo Nexus (bot)
+
+            criarLog(
+              profile.id,
+              "Mensagem Gemini",
+              `Mensagem Recebida do Gemini ID: ${mensagem.id}`
+            );
           }
         } catch (error) {
           console.error("Erro ao enviar consulta:", error);
@@ -128,9 +243,15 @@ const PaginaPrincipal = () => {
 
   const createConversa = async () => {
     try {
-      // Limpa as mensagens anteriores antes de criar a nova conversa
       setMessages([
-        { text: "Olá! Como Nexus pode te ajudar hoje?", sender: "bot" },
+        {
+          text: "Olá! Como Nexus pode te ajudar hoje?",
+          sender: "bot",
+          time: new Date().toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
       ]);
 
       const text = "Olá! Como Nexus pode te ajudar hoje?";
@@ -139,6 +260,12 @@ const PaginaPrincipal = () => {
 
       // Criação da conversa
       const conversaCriada = await criarConversa(usuario_id);
+
+      criarLog(
+        profile.id,
+        "Cria conversa BD",
+        `Nova conversa criada com o ID: ${conversaCriada.id} dentro do banco de dados `
+      );
 
       await carregarConversas();
 
@@ -171,6 +298,12 @@ const PaginaPrincipal = () => {
   const selectedRow = async (conversa) => {
     try {
       setSelectedConversa(conversa.id);
+
+      criarLog(
+        profile.id,
+        "Selecionando conversa",
+        `Conversa selecionada: ${conversa.id}`
+      );
       setConversa({
         id: conversa.id,
         usuario_id: conversa.usuario_id,
@@ -183,11 +316,21 @@ const PaginaPrincipal = () => {
       // Busca as mensagens da conversa selecionada
       const mensagens = await buscarMensagens(conversa.id);
 
+      criarLog(
+        profile.id,
+        "Buscando mensagens",
+        `Mensagens carregadas do Id: ${mensagens.id}`
+      );
+
       setMensagens(mensagens);
 
       const formattedMessages = mensagens.map((msg) => ({
         text: msg.mensagem,
         sender: msg.enviado_por === 1 ? "bot" : "user",
+        time: new Date(msg.data_envio).toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       }));
 
       setMessages(formattedMessages);
@@ -207,6 +350,7 @@ const PaginaPrincipal = () => {
           handleCreateConversa={createConversa}
           selectedRow={selectedRow}
           selectedConversa={selectedConversa}
+          deleteRow={deleteRow}
         />
         <div className="chat-container">
           <Chat
