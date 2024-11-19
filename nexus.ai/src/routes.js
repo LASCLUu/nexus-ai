@@ -25,13 +25,17 @@ function AppRoutes() {
     <Routes>
       <Route path="login" element={<h1>Tela de Login</h1>} />
 
-      <Route
+      {/* <Route
         path="/"
         element={signed ? <PaginaPrincipal /> : <Navigate to="/login" />} // Verifica se está autenticado antes de acessar
-      />
-      <Route
+      /> */}
+      {/* <Route
         path="teste"
         element={signed ? <PaginaPrincipal /> : <Navigate to="/login" />} // Verifica também para a rota /teste
+      /> */}
+      <Route
+        path="/"
+        element={<PaginaPrincipal />} // Verifica se está autenticado antes de acessar
       />
 
       {/* Rota padrão para redirecionar caso a rota não exista */}

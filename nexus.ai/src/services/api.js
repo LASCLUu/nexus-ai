@@ -8,7 +8,9 @@ const ENDPOINTS = {
   tituloConversa: "/api/titulo-gemini",
   atualizar: "/conversa/:id",
   criarConversa: "/conversa",
+  criarMensagem: "/mensagens",
   deletarConversa: "/conversa/:id",
+  listarConversas: "/conversas/:usuario_id",
 };
 
 export const api = axios.create({
@@ -82,8 +84,7 @@ export const buscarUser = async (id) => {
 
 export const criarConversa = async (dados) => {
   try {
-    const response = await api.put(ENDPOINTS.criarConversa, {
-      params: { dados },
+    const response = await api.post(ENDPOINTS.criarConversa, dados, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -107,6 +108,43 @@ export const deletarConversa = async (id) => {
     return response.data;
   } catch (err) {
     console.log("Erro ao deletar conversa: ", err);
+    throw err;
+  }
+};
+
+export const listarConversas = async (usuario_id) => {
+  try {
+    const url = ENDPOINTS.listarConversas.replace(":usuario_id", usuario_id);
+    const response = await api.get(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data; // Retorna os dados das conversas
+  } catch (err) {
+    console.log("Erro ao listar conversas: ", err);
+    throw err;
+  }
+};
+
+export const criarMensagens = async (mensagem, enviado_por) => {
+  try {
+    const response = await api.post(
+      ENDPOINTS.criarMensagem,
+      {
+        mensagem,
+        enviado_por,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // Retorna os dados da nova mensagem
+  } catch (err) {
+    console.error("Erro ao criar a mensagem: ", err);
     throw err;
   }
 };

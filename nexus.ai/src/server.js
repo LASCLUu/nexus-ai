@@ -33,12 +33,6 @@ app.use(
   })
 );
 
-
-
-
-
-
-
 app.get("/hello-world", (req, res) => {
   try {
     res.send("Hello World!");
@@ -437,23 +431,19 @@ app.delete("/usuario/:id", async (req, res) => {
 
 //criar uma conversa com o usuario
 app.post("/conversa", async (req, res) => {
-  const { usuario_id, mensagem_id, titulo_conversa, tipo_conversa } = req.body;
+  const { usuario_id, mensagem_id } = req.body;
 
-  if (!usuario_id || !mensagem_id || !titulo_conversa || !tipo_conversa) {
+  if (!usuario_id || !mensagem_id) {
     return res.status(400).json({
-      error: "Usuário, mensagem, titulo e tipo de conversa são obrigatórios",
+      error: "Usuário e mensagem são obrigatórios",
     });
   }
 
   try {
     const query =
-      'INSERT INTO "conversa" (usuario_id, mensagem_id, titulo_conversa, tipo_conversa) VALUES ($1, $2, $3, $4) RETURNING *';
-    const result = await pool.query(query, [
-      usuario_id,
-      mensagem_id,
-      titulo_conversa,
-      tipo_conversa,
-    ]);
+      'INSERT INTO "conversa" (usuario_id, mensagem_id) VALUES ($1, $2) RETURNING *';
+
+    const result = await pool.query(query, [usuario_id, mensagem_id]);
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -481,7 +471,26 @@ app.delete("/conversa/:id", async (req, res) => {
   }
 });
 
-//listar todas as conversas
+// Listar todas as conversas por usuario_id
+app.get("/conversas/:usuario_id", async (req, res) => {
+  const { usuario_id } = req.params;
+
+  try {
+    const query = 'SELECT * FROM "conversa" WHERE usuario_id = $1';
+    const result = await pool.query(query, [usuario_id]);
+
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Nenhuma conversa encontrada para este usuário." });
+    }
+
+    res.status(200).json(result.rows); // Retorna todas as conversas encontradas
+  } catch (error) {
+    console.error("Erro ao consultar conversas:", error);
+    res.status(500).json({ error: "Erro ao consultar conversas." });
+  }
+});
 
 //atualizar conversas
 app.put("/conversa/:id", async (req, res) => {
