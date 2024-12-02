@@ -4,16 +4,7 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Chat from "../../components/Chat/Chat";
 import "./main.css";
 import { useEffect, useState } from "react";
-import {
-  messageGemini,
-  tituloGemini,
-  atualizarConversa,
-  criarMensagens,
-  criarConversa,
-  buscarMensagens,
-  deletarConversa,
-  criarLog,
-} from "../../services/api";
+import * as api from "../../services/api";
 import { useContextSelector } from "use-context-selector";
 import { AppContext } from "../../contexts/AppContext";
 import { useContext } from "react";
@@ -31,6 +22,7 @@ const PaginaPrincipal = () => {
       }),
     },
   ]);
+
   const [selectedConversa, setSelectedConversa] = useState(null);
 
   const profile = useContextSelector(AppContext, (context) => context.profile);
@@ -47,9 +39,9 @@ const PaginaPrincipal = () => {
 
   const deleteRow = async (id) => {
     try {
-      await deletarConversa(id);
+      await api.deletarConversa(id);
 
-      criarLog(
+      api.criarLog(
         profile.id,
         "Deletado conversa",
         `Deletado a conversa com o ID: ${id}`
@@ -84,20 +76,20 @@ const PaginaPrincipal = () => {
           ]);
 
           // Criação da mensagem no banco de dados
-          const mensagem = await criarMensagens(
+          const mensagem = await api.criarMensagens(
             inputMessage,
             profile.id,
             novaConversa.id
           ); // Enviado pelo usuário
-          criarLog(
+          api.criarLog(
             profile.id,
             "Enviou messagem ao BD",
             `Nova mensagem foi enviada para o BD ID: ${mensagem.id}`
           );
 
           // Envia a mensagem para o bot e atualiza a interface
-          const response = await messageGemini(inputMessage);
-          criarLog(
+          const response = await api.messageGemini(inputMessage);
+          api.criarLog(
             profile.id,
             "Enviou messagem ao Gemini",
             `Nova mensagem foi enviada para o Gemini ID: ${response.id}`
@@ -105,9 +97,7 @@ const PaginaPrincipal = () => {
 
           setInputMessage(""); // Limpa o campo de entrada
 
-          const respostaLimpa = response.completion
-            ? response.completion.replace(/\*\*(.*?)\*\*/g, "$1")
-            : ""; // Retorna uma string vazia caso response.completion seja undefined
+          const respostaLimpa = response.completion ? response.completion : ""; // Retorna uma string vazia caso response.completion seja undefined
 
           if (response.error) {
             // Se houver erro na resposta do bot, cria uma mensagem de erro
@@ -123,13 +113,13 @@ const PaginaPrincipal = () => {
               },
             ]);
             // Cria a mensagem de erro no banco de dados
-            const erro = await criarMensagens(
+            const erro = await api.criarMensagens(
               response.error,
               1,
               novaConversa.id
             ); // Enviado pelo Nexus (bot)
 
-            criarLog(
+            api.criarLog(
               profile.id,
               "Erro Gemini",
               `Erro ao se comunicar com Gemini ID: ${erro.id}`
@@ -148,12 +138,12 @@ const PaginaPrincipal = () => {
               },
             ]);
             // Cria a mensagem do bot no banco de dados
-            const mensagem = await criarMensagens(
+            const mensagem = await api.criarMensagens(
               response.completion,
               1,
               novaConversa.id
             ); // Enviado pelo Nexus (bot)
-            criarLog(
+            api.criarLog(
               profile.id,
               "Mensagem Gemini",
               `Mensagem Recebida do Gemini ID: ${mensagem.id}`
@@ -181,14 +171,11 @@ const PaginaPrincipal = () => {
           setInputMessage(""); // Limpa o campo de entrada
 
           // Criação da mensagem no banco de dados
-          await criarMensagens(inputMessage, profile.id, conversa.id); // Enviado pelo usuário
+          await api.criarMensagens(inputMessage, profile.id, conversa.id); // Enviado pelo usuário
 
           // Envia a mensagem para o bot e atualiza a interface
-          const response = await messageGemini(inputMessage);
-          const respostaLimpa = response.completion.replace(
-            /\*\*(.*?)\*\*/g,
-            "$1"
-          ); // Remove o negrito (**) das palavras
+          const response = await api.messageGemini(inputMessage);
+          const respostaLimpa = response.completion; // Remove o negrito (**) das palavras
 
           if (response.error) {
             // Se houver erro na resposta do bot, cria uma mensagem de erro
@@ -204,8 +191,12 @@ const PaginaPrincipal = () => {
               },
             ]);
             // Cria a mensagem de erro no banco de dados
-            const erro = await criarMensagens(response.error, 1, conversa.id); // Enviado pelo Nexus (bot)
-            criarLog(
+            const erro = await api.criarMensagens(
+              response.error,
+              1,
+              conversa.id
+            ); // Enviado pelo Nexus (bot)
+            api.criarLog(
               profile.id,
               "Erro Gemini",
               `Erro ao se comunicar com Gemini ID: ${erro.id}`
@@ -224,13 +215,13 @@ const PaginaPrincipal = () => {
               },
             ]);
             // Cria a mensagem do bot no banco de dados
-            const mensagem = await criarMensagens(
+            const mensagem = await api.criarMensagens(
               response.completion,
               1,
               conversa.id
             ); // Enviado pelo Nexus (bot)
 
-            criarLog(
+            api.criarLog(
               profile.id,
               "Mensagem Gemini",
               `Mensagem Recebida do Gemini ID: ${mensagem.id}`
@@ -261,9 +252,9 @@ const PaginaPrincipal = () => {
       const usuario_id = profile.id; // ID do usuário atual
 
       // Criação da conversa
-      const conversaCriada = await criarConversa(usuario_id);
+      const conversaCriada = await api.criarConversa(usuario_id);
 
-      criarLog(
+      api.criarLog(
         profile.id,
         "Cria conversa BD",
         `Nova conversa criada com o ID: ${conversaCriada.id} dentro do banco de dados `
@@ -272,7 +263,7 @@ const PaginaPrincipal = () => {
       await carregarConversas();
 
       // Criação da mensagem associada à conversa
-      const mensagemCriada = await criarMensagens(
+      const mensagemCriada = await api.criarMensagens(
         text,
         enviado_por,
         conversaCriada.id // conversa_id
@@ -301,7 +292,7 @@ const PaginaPrincipal = () => {
     try {
       setSelectedConversa(conversa.id);
 
-      criarLog(
+      api.criarLog(
         profile.id,
         "Selecionando conversa",
         `Conversa selecionada: ${conversa.id}`
@@ -316,9 +307,9 @@ const PaginaPrincipal = () => {
       });
 
       // Busca as mensagens da conversa selecionada
-      const mensagens = await buscarMensagens(conversa.id);
+      const mensagens = await api.buscarMensagens(conversa.id);
 
-      criarLog(
+      api.criarLog(
         profile.id,
         "Buscando mensagens",
         `Mensagens carregadas do Id: ${mensagens.id}`
@@ -340,6 +331,11 @@ const PaginaPrincipal = () => {
       console.error("Erro ao selecionar a conversa:", error);
     }
   };
+
+  useEffect(() => {
+    api.carregarConversaAPI(selectedConversa, messages);
+    console.log(messages);
+  }, [selectedConversa]);
 
   return (
     <div className="page-container">

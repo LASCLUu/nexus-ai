@@ -1,6 +1,10 @@
 const express = require("express"); //chamada http
 const cors = require("cors"); //segurança
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} = require("@google/generative-ai");
 const dotenv = require("dotenv");
 const { Pool } = require("pg");
 const fs = require("fs");
@@ -9,6 +13,37 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "*",
+    methods: "*",
+    allowedHeaders: "*",
+  })
+);
+
+const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  systemInstruction:
+    "Você é um assistente educacional especializado em responder perguntas sobre matérias escolares. Seu objetivo é fornecer explicações claras e úteis sobre temas como matemática, ciências, história, geografia, física, química, biologia e outras disciplinas acadêmicas. \n\n" +
+    "Se o usuário fizer uma saudação, como 'Oi', 'Tudo bem?', 'Como vai?', responda educadamente com mensagens amigáveis, por exemplo: 'Olá! Tudo bem? Como posso ajudar com suas dúvidas escolares hoje?'.\n" +
+    "Se o usuário fizer uma pergunta sobre matérias escolares, forneça uma resposta detalhada e precisa, sempre mantendo um tom educado e informativo.\n" +
+    "Se o usuário perguntar algo que não seja sobre matérias escolares ou fizer solicitações fora do escopo, recuse educadamente com mensagens como: 'Desculpe, só consigo ajudar com perguntas relacionadas a matérias escolares. Posso ajudar com algo nesse sentido?'.\n" +
+    "Seu comportamento deve ser sempre educado, objetivo e alinhado ao contexto acadêmico.\n\n" +
+    "Caso o usuário tente discutir ou solicitar algo fora do contexto acadêmico (como receitas de culinária, dicas de entretenimento, etc.), você deve recusar educadamente, explicando que a ajuda está restrita a matérias escolares. Exemplo: 'Desculpe, não posso ajudar com isso. Posso ajudar com dúvidas sobre matemática, ciências, história, ou outra matéria escolar?'",
+  tools: [{ codeExecution: {} }],
+});
+
+const generationConfig = {
+  temperature: 2,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
 
 const dbConfig = {
   user: process.env.REACT_APP_POSTGRESQL_USER,
@@ -25,138 +60,90 @@ const dbConfig = {
 // Usando Pool de Conexões para gerenciar as conexões com o banco de dados
 const pool = new Pool(dbConfig);
 
-app.use(
-  cors({
-    origin: "*",
-    methods: "*",
-    allowedHeaders: "*",
-  })
-);
+let conversations = {};
+
+app.get("/api/consultar-gemini", async (req, res) => {
+  try {
+    const { prompt, conversaId } = req.query;
+
+    // Verificar se o prompt foi fornecido
+    if (!prompt || typeof prompt !== "string" || prompt.trim() === "") {
+      return res.status(400).json({
+        error:
+          "O parâmetro 'prompt' é necessário e deve ser uma string não vazia.",
+      });
+    }
+
+    const conversation = conversations[conversaId] || { history: [] };
+
+    // Cria a sessão de chat com o histórico existente
+    const chatSession = model.startChat({
+      generationConfig,
+      history: conversation.history,
+    });
+    // Enviar a mensagem e obter o resultado
+    const result = await chatSession.sendMessage(prompt);
+
+    // Verificar se há uma resposta válida no resultado
+    if (!result || !result.response || !result.response.text) {
+      throw new Error("Resposta inválida do modelo.");
+    }
+
+    conversations[conversaId] = conversation;
+
+    // Retornar o texto da resposta
+    res.json({ completion: result.response.text() });
+  } catch (error) {
+    // Log detalhado do erro para depuração
+    console.error("Erro ao interagir com o modelo:", error.message || error);
+
+    // Responder com erro apropriado
+    res.status(500).json({
+      error: "Erro ao gerar conteúdo. Tente novamente mais tarde.",
+      details: error.message || "Erro desconhecido",
+    });
+  }
+});
+
+app.post("/api/conversa/carregar", (req, res) => {
+  try {
+    const { conversaId, messages } = req.body; // Receber o ID da conversa e as mensagens do corpo da requisição
+
+    // Se não for fornecido um ID, gera um automaticamente
+    const id = conversaId || `conversa-${Date.now()}`;
+
+    // Verificar se a conversa já existe
+    if (conversations[id]) {
+      // Se a conversa já existir, adicione as novas mensagens ao histórico existente
+      conversations[id].history.push(...messages); // Adiciona todas as mensagens recebidas no histórico
+
+      return res.json({
+        conversationId: id,
+        message: "Conversa atualizada!",
+        history: conversations[id].history, // Retorna o histórico atualizado
+      });
+    }
+
+    // Se a conversa não existir, cria uma nova conversa com o histórico das mensagens recebidas
+    conversations[id] = { history: [...messages] }; // Inicia o histórico com as mensagens recebidas
+
+    // Retorna o ID da nova conversa
+    res.json({
+      conversationId: id,
+      message: "Nova conversa criada!",
+      history: conversations[id].history,
+    });
+  } catch (error) {
+    console.error("Erro ao carregar ou criar conversa:", error);
+    res.status(500).send({ error: "Erro ao carregar ou criar conversa." });
+  }
+});
 
 app.get("/hello-world", (req, res) => {
   try {
     res.send("Hello World!");
   } catch (error) {
     res.status(500).send(error);
-  }
-});
-
-// app.post("/api/pergunte-ao-gemini", async (req, res) => {
-//   try {
-//     const { prompt } = req.body;
-
-//     if (!prompt) {
-//       return res.status(400).json({ error: "Prompt é necessário!" });
-//     }
-
-//     const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-//     const model = genAI.getGenerativeModel({
-//       model: "gemini-1.5-flash",
-//     });
-
-//     const result = await model.generateContent(prompt);
-//     res.json({ completion: result.response.text });
-//   } catch (error) {
-//     console.error("Erro ao interagir com o modelo:", error);
-//     res.status(500).send({ error: "Erro ao gerar conteúdo." });
-//   }
-// });
-
-app.get("/api/consultar-gemini", async (req, res) => {
-  try {
-    const { prompt } = req.query;
-
-    if (!prompt) {
-      return res.status(400).json({ error: "Prompt é necessário!" });
-    }
-
-    const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-    });
-
-    // Primeira chamada: verificar se é uma pergunta escolar
-    const classificationPrompt = `
-Você vai classificar uma pergunta em três categorias: "Matéria Escolar", "Cumprimento" e "Outro".
-- "Matéria Escolar" inclui perguntas sobre disciplinas como Matemática, Português, História, Ciência, Geografia, entre outras, bem como curiosidades relacionadas a esses temas.
-- "Cumprimento" inclui saudações, despedidas e expressões como "Olá", "Oi", "Até logo", etc.
-- "Outro" abrange qualquer pergunta ou mensagem que não esteja relacionada a matérias escolares ou curiosidades acadêmicas.
-
-Classifique a seguinte pergunta como "Matéria Escolar", "Cumprimento" ou "Outro". Pergunta: ${prompt}
-`;
-
-    const classificationResult = await model.generateContent(
-      classificationPrompt
-    );
-
-    const label = classificationResult.response.text().toLowerCase();
-    const palavras = ["matéria escolar", "cumprimento"];
-    const contemAlgumaPalavra = palavras.some((palavra) =>
-      label.includes(palavra)
-    );
-
-    let finalLabel = "";
-
-    if (contemAlgumaPalavra) {
-      finalLabel = label;
-    } else {
-      finalLabel = "outro";
-    }
-
-    if (finalLabel === "outro") {
-      return res.json({
-        error:
-          "Por favor tente outra pergunta relacionada a matérias escolares para podermos avançar.",
-      });
-    } else {
-      const result = await model.generateContent(prompt);
-      res.json({ completion: result.response.text(), classification: label });
-    }
-  } catch (error) {
-    console.error("Erro ao interagir com o modelo:", error);
-    res.status(500).send({ error: "Erro ao gerar conteúdo." });
-  }
-});
-
-app.get("/api/titulo-gemini", async (req, res) => {
-  try {
-    const { prompt } = req.query;
-
-    if (!prompt) {
-      return res.status(400).json({ error: "Prompt é necessário!" });
-    }
-
-    const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-    });
-
-    // Primeira chamada: verificar se o prompt é adequado para ser título
-    const classificationPrompt = `
-Essa pergunta pode ser levada em consideração para ser usada como título da conversa? Responda com "Titulo da Conversa"(Limite de 100 caracteres) ou "Não". Pergunta: ${prompt}
-`;
-
-    const classificationResult = await model.generateContent(
-      classificationPrompt
-    );
-    const label = classificationResult.response.text().toLowerCase().trim();
-
-    if (label.includes("não")) {
-      return res.json({
-        completion: "Não",
-        classification: "Não é um título válido.",
-      });
-    }
-
-    // Segunda chamada: gerar o título, se necessário
-    const result = await model.generateContent(prompt);
-    const titulo = result.response.text().trim();
-
-    // Retorna o título gerado junto com a classificação
-    res.json({ completion: titulo, classification: label });
-  } catch (error) {
-    console.error("Erro ao interagir com o modelo:", error);
-    res.status(500).json({ error: "Erro ao gerar conteúdo." });
   }
 });
 
@@ -486,7 +473,6 @@ app.delete("/conversa/:id", async (req, res) => {
     res.status(500).json({ error: "Erro ao excluir conversa" });
   }
 });
-
 
 // Listar todas as conversas por usuario_id
 app.get("/conversas/:usuario_id", async (req, res) => {

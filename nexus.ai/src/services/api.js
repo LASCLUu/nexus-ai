@@ -14,6 +14,7 @@ const ENDPOINTS = {
   buscarMensagens: "/mensagens/conversa",
   atualizarConversa: "/conversa/:id",
   criarLog: "/log",
+  conversaNova: "/api/conversa/carregar",
 };
 
 export const api = axios.create({
@@ -182,6 +183,24 @@ export const criarLog = async (usuario_id, tipo_log, descricao) => {
         tipo_log,
         descricao,
       },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // Retorna os dados da nova mensagem
+  } catch (err) {
+    console.error("Erro ao criar a mensagem: ", err);
+    throw err;
+  }
+};
+
+export const carregarConversaAPI = async (conversaId, messages) => {
+  try {
+    const response = await api.post(
+      ENDPOINTS.conversaNova,
+      { conversaId, messages },
       {
         headers: {
           "Content-Type": "application/json",
