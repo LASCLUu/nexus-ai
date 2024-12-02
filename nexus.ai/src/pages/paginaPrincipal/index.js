@@ -47,7 +47,16 @@ const PaginaPrincipal = () => {
         `Deletado a conversa com o ID: ${id}`
       );
       await carregarConversas();
-      console.log(`Conversa ${id} deletada com sucesso!`);
+      setMessages([
+        {
+          text: "Olá! Como Nexus pode te ajudar hoje?",
+          sender: "bot",
+          time: new Date().toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
     } catch (err) {
       console.error("Erro ao deletar conversa:", err);
     }
@@ -236,20 +245,9 @@ const PaginaPrincipal = () => {
 
   const createConversa = async () => {
     try {
-      setMessages([
-        {
-          text: "Olá! Como Nexus pode te ajudar hoje?",
-          sender: "bot",
-          time: new Date().toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-      ]);
-
       const text = "Olá! Como Nexus pode te ajudar hoje?";
-      const enviado_por = 1; // ID do Nexus
-      const usuario_id = profile.id; // ID do usuário atual
+      const enviado_por = 1;
+      const usuario_id = profile.id;
 
       // Criação da conversa
       const conversaCriada = await api.criarConversa(usuario_id);
@@ -269,10 +267,20 @@ const PaginaPrincipal = () => {
         conversaCriada.id // conversa_id
       );
 
-      const mensagem_id = mensagemCriada.id; // ID da mensagem criada
+      const mensagem_id = mensagemCriada.id;
 
       setSelectedConversa(conversaCriada.id);
-      // Atualização do estado da conversa
+
+      setMessages([
+        {
+          text,
+          sender: "bot",
+          time: new Date().toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
       setConversa({
         id: conversaCriada.id,
         usuario_id: conversaCriada.usuario_id,
@@ -334,8 +342,7 @@ const PaginaPrincipal = () => {
 
   useEffect(() => {
     api.carregarConversaAPI(selectedConversa, messages);
-    console.log(messages);
-  }, [selectedConversa]);
+  }, [messages]);
 
   return (
     <div className="page-container">

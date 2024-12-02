@@ -53,7 +53,8 @@ const Chat = ({
                       {message.sender === "user" ? profile.nome : bot.nome}
                     </strong>
                     <small className={`pull-right text-muted`}>
-                      <i className="fa fa-clock-o"></i> {message.time}
+                      <i className="fa fa-clock-o"></i>{" "}
+                      {new Date().toLocaleTimeString()}
                     </small>
                   </div>
                   <p>{message.text}</p>
