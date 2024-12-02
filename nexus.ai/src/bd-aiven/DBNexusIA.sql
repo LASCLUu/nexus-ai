@@ -4,7 +4,7 @@ CREATE TABLE "usuario" (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     url_foto VARCHAR(255),
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_criacao TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')
 );
 
 CREATE TABLE "conversa" (
@@ -12,7 +12,7 @@ CREATE TABLE "conversa" (
     usuario_id INT REFERENCES "usuario"(id) ON DELETE CASCADE,
     titulo_conversa VARCHAR(100),
     tipo_conversa VARCHAR(50),
-    data_log TIMESTAMP DEFAULT CURRENT_TIMESTAMP    
+    data_log TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')
 );
 
 CREATE TABLE "mensagens" (
@@ -20,7 +20,7 @@ CREATE TABLE "mensagens" (
     mensagem TEXT NOT NULL,
 	enviado_por INT REFERENCES "usuario"(id) ON DELETE CASCADE,
     conversa_id INT REFERENCES "conversa"(id) ON DELETE CASCADE,
-    data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+data_envio TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')
 );
 
 CREATE TABLE "log_sistema" (
@@ -28,7 +28,7 @@ CREATE TABLE "log_sistema" (
     usuario_id INT REFERENCES "usuario"(id),        
     tipo_log VARCHAR(50) NOT NULL,                
     descricao TEXT NOT NULL,                        
-    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_hora TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')
 );
 
 INSERT INTO "usuario" (id, nome, email, url_foto) VALUES
